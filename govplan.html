@@ -225,6 +225,53 @@
     <span class="flow-step dim">sdd-archive</span>
   </div>
 
+  <!-- ===== BRIEF MODES ===== -->
+  <div class="section-title"><span class="icon">&#9881;</span> Modos de brief — LITE / STANDARD / FULL</div>
+  <div class="card">
+    <p style="margin-bottom: 0.75rem;">
+      Para evitar sobreingenier&iacute;a, <code>sdd-govplan</code> se adapta al proyecto.
+      La auto-detecci&oacute;n resuelve el modo seg&uacute;n las primeras respuestas,
+      o pod&eacute;s forzarlo con flags:
+    </p>
+    <table>
+      <tr>
+        <th>Modo</th>
+        <th>Secciones</th>
+        <th>Preguntas</th>
+        <th>Ideal para</th>
+        <th>Flag</th>
+      </tr>
+      <tr>
+        <td><span class="tag tag-green">LITE</span></td>
+        <td>7</td>
+        <td>~6-8</td>
+        <td>CLI tools, MVPs, protos, APIs simples</td>
+        <td><code>--lite</code> / <code>-l</code></td>
+      </tr>
+      <tr>
+        <td><span class="tag tag-orange">STANDARD</span></td>
+        <td>11</td>
+        <td>~12-15</td>
+        <td>Web apps, equipos 2-5, proyectos medianos</td>
+        <td><code>--standard</code> / <code>-s</code></td>
+      </tr>
+      <tr>
+        <td><span class="tag tag-blue">FULL</span></td>
+        <td>19</td>
+        <td>~20-25</td>
+        <td>Sistemas cr&iacute;ticos, equipos 6+, high/critical</td>
+        <td><code>--full</code> / <code>-f</code></td>
+      </tr>
+    </table>
+    <p style="margin-top: 0.75rem; color: var(--text-muted); font-size: 0.9rem;">
+      <strong>Auto-detecci&oacute;n:</strong> <code>cli_tool + 1 persona + mvp-2sem &rarr; LITE</code> &bull;
+      <code>web_saas + 2-5 + medium-3mes &rarr; STANDARD</code> &bull;
+      <code>6+ / critical / long-6mes+ &rarr; FULL</code><br>
+      El usuario puede cambiar de modo en cualquier momento diciendo
+      <em>"cambiar a lite"</em> o <em>"cambiar a full"</em>.
+    </p>
+  </div>
+
   <!-- ===== Q&A ===== -->
   <div class="section-title"><span class="icon">&#10067;</span> Preguntas frecuentes</div>
 
@@ -280,6 +327,21 @@
       El template completo tiene <strong>35 secciones</strong> organizadas en: metadata, negocio, stakeholders,
       arquitectura, datos, file storage, search, frontend, auth, API, agentes AI, observabilidad, CI/CD,
       testing, seguridad, features registry, ADRs, requisitos t&eacute;cnicos y riesgos.
+    </div>
+  </div>
+
+  <div class="qa">
+    <div class="qa-q">&iquest;C&oacute;mo se decide si usar LITE, STANDARD o FULL?</div>
+    <div class="qa-a">
+      Se auto-detecta seg&uacute;n las primeras respuestas. Si pon&eacute;s
+      <code>cli_tool + team_size: 1 + timeframe: mvp-2sem</code> autom&aacute;ticamente
+      entra en <strong>LITE</strong> (~6 preguntas, 5 minutos).<br><br>
+      Si el proyecto es un <code>web_saas + critical + 15+</code> salta a
+      <strong>FULL</strong> (19 secciones completas).<br><br>
+      Tambi&eacute;n pod&eacute;s forzar con flags:
+      <code>/sdd-govplan --lite</code>, <code>/sdd-govplan --standard</code>,
+      <code>/sdd-govplan --full</code>. O cambi&aacute;s de modo durante la
+      conversaci&oacute;n diciendo <em>"cambiar a full"</em>.
     </div>
   </div>
 
