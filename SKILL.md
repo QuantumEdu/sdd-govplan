@@ -31,8 +31,43 @@ Think of it as the **Well-Architected / DLC-style governance brief** for your pr
 |---------|--------|
 | User says `/sdd-govplan` or "hagamos governance" | Load this skill and start the governance flow |
 | User says `/sdd-govplan <idea>` | Load and start with the idea pre-filled |
+| User says `/sdd-govplan --lite` or `-l` or `--brief` | Force LITE mode (7 sections, minimal questions) |
+| User says `/sdd-govplan --standard` or `-s` | Force STANDARD mode (10 sections) |
+| User says `/sdd-govplan --full` or `-f` | Force FULL mode (19 sections) |
 | User says "necesito planificar un proyecto" or similar | Suggest `/sdd-govplan` |
 | User invokes `/sdd-new` without prior context | ASK: "¿Querés empezar con governance planning (/sdd-govplan) primero?" |
+
+## Brief Mode — Auto-Detection
+
+The skill supports three levels of depth to prevent over-engineering:
+
+| Mode | Sections | Questions | Cuando usar |
+|------|----------|-----------|-------------|
+| **LITE** (`--lite`) | 7 — metadata, negocio, stakeholders, arquitectura, datos, restricciones, entrega | ~6-8 | CLI tools, MVPs, prototipos, APIs simples, experimentos |
+| **STANDARD** (`--standard`) | 10 — LITE + auth, API, frontend, testing | ~12-15 | Web apps, proyectos medianos, equipos 2-5 |
+| **FULL** (`--full`) | 19 — STANDARD + file_storage, search, agentes_ai, observabilidad, CI/CD, seguridad, riesgos | ~20-25 | Sistemas críticos, equipos 6+, high/critical, SaaS |
+
+**Auto-detección** — si no se pasa flag, detectá automáticamente:
+
+| Condición | Modo |
+|-----------|------|
+| `cli_tool` + `team_size: 1` + `timeframe: mvp-2sem` | **LITE** |
+| `team_size: 1` + (`mvp-2sem` o `short-1mes`) | **LITE** |
+| `criticalidad: low` + `team_size: 1` | **LITE** |
+| `api_backend` + `team_size: 2-5` | **STANDARD** |
+| `web_saas` + `team_size: 2-5` + `medium-3mes` | **STANDARD** |
+| `team_size: 6+` | **FULL** |
+| `criticalidad: high` o `critical` | **FULL** |
+| `timeframe: long-6mes+` | **FULL** |
+| `tipo_entrega: agente_ai` | **FULL** |
+| Ninguna condición coincide | **STANDARD** (default safe) |
+
+La auto-detección ocurre apenas se tienen las primeras respuestas (secciones 1 y 2).
+Una vez resuelto el modo, comunicáselo al usuario:
+*"Según lo que me contás, esto se ve como un proyecto {modo}. Te voy a hacer las preguntas esenciales.
+Si querés más/menos detalle, decí 'cambiar a full' o 'cambiar a lite'."*
+
+El usuario puede cambiar de modo en cualquier momento durante la conversación.
 
 ## Governance Planning Flow
 
@@ -43,18 +78,38 @@ standard protocol). If not, delegate to `sdd-init` first, then proceed.
 
 ### Phase 1: Conversational Requirement Gathering (YOU — inline)
 
-Run an interactive Q&A session with the user. Ask ONE question at a time.
-Use the `project-brief-template.yaml` (in `assets/`) to determine questions
-and their priority. Follow this order:
+**Step 1 — Resolve mode**: Check for explicit flags (`--lite`, `--standard`, `--full`).
+If none found, collect initial context (tipo_entrega, team_size, criticalidad, timeframe)
+and apply auto-detección.
 
-1. **Context & Stack** (metadata, tipo_entrega, stack_principal, criticalidad)
-2. **Business Context** (problema, solución, KPIs, restricciones)
-3. **Stakeholders** (who decides, who uses)
-4. **Architecture** (patrón, bounded contexts, integraciones)
-5. **Data Strategy** (DB, ORM, caching, backup)
-6. **Special sections** (file_storage, search, frontend — only if `applies_to` matches)
+**Step 2 — Run Q&A** according to the resolved mode.
 
-**Rules for the conversation**:
+**LITE mode** — usa `assets/project-brief-lite.yaml` (7 secciones):
+1. **Context & Stack** (metadata, tipo_entrega, stack, criticalidad, team_size, timeframe)
+2. **Business Context** (problema, solución, estado_actual, modelo_negocio, fuera_de_alcance)
+3. **Stakeholders** (solo usuarios_primarios — 1 persona)
+4. **Architecture** (patrón, bounded contexts, tipo_ejecución)
+5. **Data Strategy** (db_dev, db_prod, orm, ids)
+6. **Restricciones** (técnicas, negocio, operativas)
+7. **Entrega** (criterio_éxito, riesgos principales, siguiente_paso)
+
+**STANDARD mode** — LITE + secciones adicionales:
+8. **Auth** (método, proveedor, social_login, roles, 2FA)
+9. **API & Comunicación** (tipo, versionado, documentación, paginación)
+10. **Frontend** (renderizado, ui_library, estado, routing, testing_ui)
+11. **Testing** (unitario, integración, e2e, cobertura_mínima)
+
+**FULL mode** — STANDARD + secciones adicionales:
+12. **File Storage** (proveedor, bucket_strategy, tipos_archivo, CDN)
+13. **Search & Indexing** (motor, tipo_búsqueda, indexación, vectorial)
+14. **Agentes AI** (framework, modelos, herramientas, memoria)
+15. **Monitoreo & Observabilidad** (logging, métricas, tracing, alerting)
+16. **CI/CD & DevOps** (ci, cd, contenedores, orquestador, secrets)
+17. **Seguridad** (cifrado, secrets_scan, pentesting, cumplimiento)
+18. **Technical Requirements** (performance, scalability, compliance)
+19. **Riesgos** (probabilidad, impacto, mitigación, contingencia)
+
+**Rules for the conversation** (all modes):
 - Always start with: *"Vamos a hacer el governance planning. Te voy a hacer algunas preguntas para entender el proyecto. Respondé en cualquier orden, decí 'saltar' si una sección no aplica."*
 - Show options when there are clear choices (like stack_principal)
 - The user can answer multiple questions at once, skip, or say "no sé"
@@ -62,6 +117,7 @@ and their priority. Follow this order:
 - If the user gives a short/vague answer, ask ONE follow-up to clarify
 - Do NOT ask questions whose `omit_if` condition is met (e.g., don't ask about frontend if it's an api_backend)
 - Do NOT ask sections where `required: false` and clearly irrelevant
+- If the user says "cambiar a lite", "cambiar a full", etc., switch modes immediately
 
 **You MAY read 1-3 files to verify something during conversation** (per delegation rules).
 For anything larger, delegate to `sdd-explore`.
@@ -96,6 +152,15 @@ called `governance/project-brief.yaml`.
 **For `engram` mode**: Save to engram as `sdd/govplan/{project-name}/brief`.
 
 **For `none` mode**: Return inline.
+
+**Template selection per mode**:
+- **LITE** → usa `assets/project-brief-lite.yaml` — 74 líneas, 7 secciones
+- **STANDARD** → usa `assets/project-brief-full.yaml` — secciones 1-11
+- **FULL** → usa `assets/project-brief-full.yaml` completo — secciones 1-19
+
+The brief content changes per mode but the output structure is consistent.
+In LITE mode, skip features/ADRs/technical_requirements/tasks_summary that
+require info you didn't ask for. In STANDARD and FULL modes, include them.
 
 The brief MUST include these sections (filled from the conversation + exploration):
 
@@ -182,6 +247,7 @@ Return this envelope when governance planning is complete:
 
 ```markdown
 **Status**: success | partial | blocked
+**Mode**: LITE | STANDARD | FULL (auto-detected | --flag)
 **Summary**: Governance planning complete for {project}. {N} features identified,
 {N} architecture decisions recorded, {N} technical requirements defined.
 **Artifacts**:
@@ -219,6 +285,7 @@ Acceptance criteria feed into `sdd-verify` as verification checkpoints.
 ## Rules
 
 - ALWAYS run `sdd-init` check first (SDD Init Guard)
+- ALWAYS resolve brief mode before starting questions (flag > auto-detect > standard default)
 - ALWAYS save to the active artifact store mode
 - Keep the conversation focused — one question at a time
 - If mode is `openspec`, create `governance/` directory under project root
@@ -227,9 +294,13 @@ Acceptance criteria feed into `sdd-verify` as verification checkpoints.
 - Do NOT create placeholder files — only write artifacts when user confirms the brief
 - For greenfield projects, skip Phase 2 (codebase exploration)
 - For brownfield/migration projects, Phase 2 is MANDATORY
+- The user can switch modes mid-conversation ("cambiar a lite", "cambiar a full")
+- In LITE mode, skip features/ADRs/technical_requirements in the output brief if not covered
 - Return envelope per **Section D** from `skills/_shared/sdd-phase-common.md`
+- Report resolved mode in the return summary
 
 ## References
 
-- `assets/project-brief-template.yaml` — Full template with 35 sections
+- `assets/project-brief-lite.yaml` — LITE template (7 sections, 74 lines)
+- `assets/project-brief-full.yaml` — FULL template (19 sections, ~380 lines)
 - `skills/_shared/sdd-phase-common.md` — Common return envelope + persistence
