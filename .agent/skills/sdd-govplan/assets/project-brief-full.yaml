@@ -1,0 +1,431 @@
+# =============================================================================
+# PROJECT-BRIEF-FULL.yaml  ·  v2.0
+# =============================================================================
+# Template estructurado de 35 secciones para capturar todos los requisitos
+# de un proyecto antes de generar un PRD, Stack JSON o inicializar un agente.
+#
+# CONVENCIONES:
+#   required: true/false   -> si omitir el campo rompe el pipeline
+#   omit_if: [condición]   -> cuándo esta sección puede saltarse
+#   applies_to: [tipos]    -> qué tipo_entrega activa esta sección
+#
+# FLUJO RECOMENDADO:
+#   1. Llenar secciones 1-3 (contexto, negocio, personas) -- SIEMPRE
+#   2. Llenar secciones 4-10 (arquitectura técnica core) -- SIEMPRE
+#   3. Activar secciones adicionales según tipo_entrega y flags
+#   4. Ejecutar: brief-to-prd -> sdd-propose -> sdd-spec -> sdd-tasks
+# =============================================================================
+
+# ---------------------------------------------------------------------------
+# SECCIÓN 1 | CONTEXTO & STACK BASE
+# required: true  |  omit_if: []
+# ---------------------------------------------------------------------------
+metadata:
+  nombre: ""                    # Nombre del sistema/producto
+  codigo_proyecto: ""           # Clave corta ej: CSAUTO, VITACARE, PESCAPT
+  version_brief: "1.0"
+  fecha: ""                     # YYYY-MM-DD
+  autor: ""                     # Arquitecto responsable
+  repositorio: ""               # URL del repo (o "pendiente")
+
+tipo_entrega: ""
+# web_saas | app_desktop | hibrido | api_backend | cli_tool | agente_ai
+
+stack_principal: ""
+# nextjs15 | go_wails | fastapi_ssr | fastapi_spa | fastapi_desktop
+# | electron_react | otro: ""
+
+criticalidad: ""
+# low | medium | high | critical
+
+team_size: ""
+# 1 | 2-5 | 6-15 | 15+
+
+timeframe: ""
+# mvp-2sem | short-1mes | medium-3mes | long-6mes+
+
+# ---------------------------------------------------------------------------
+# SECCIÓN 2 | CONTEXTO DE NEGOCIO & PROBLEM STATEMENT
+# required: true  |  omit_if: []
+# ---------------------------------------------------------------------------
+negocio:
+  problema: ""
+  # "El sistema existe porque [problema] que afecta a [quién]
+  #  y cuesta [impacto medible]."
+
+  solucion_propuesta: ""
+  # Qué hace el sistema. 1-3 oraciones, sin jerga técnica.
+
+  estado_actual: ""
+  # greenfield | brownfield | migracion | prototipo
+
+  sistema_legacy: ""
+  # Si brownfield/migración: nombre, stack, volumen.
+  # Si greenfield: "N/A"
+
+  modelo_negocio: ""
+  # b2b_saas | b2c | interno | open_source | gobierno | educativo | mixto
+
+  success_kpis:
+    - kpi: ""
+      meta: ""
+      plazo: ""
+
+  restricciones_negocio: []
+  supuestos: []
+  fuera_de_alcance: []
+
+# ---------------------------------------------------------------------------
+# SECCIÓN 3 | STAKEHOLDERS & PERSONAS
+# required: true  |  omit_if: [tipo_entrega == "cli_tool"]
+# ---------------------------------------------------------------------------
+stakeholders:
+  decision_makers:
+    - nombre: ""
+      rol: ""
+      expectativa: ""
+      riesgo: ""
+
+  usuarios_primarios:
+    - persona: ""
+      perfil: ""
+      job_to_be_done: ""
+      pain_points: []
+      frecuencia_uso: ""   # diaria | semanal | ocasional
+
+  usuarios_secundarios: []
+
+  equipo_desarrollo:
+    - nombre: ""
+      rol: ""              # Arquitecto | Backend | Frontend | DevOps | QA
+      disponibilidad: ""   # % de tiempo
+
+# ---------------------------------------------------------------------------
+# SECCIÓN 4 | ARQUITECTURA & LÍMITES DE DOMINIO
+# required: true  |  omit_if: []
+# ---------------------------------------------------------------------------
+arquitectura:
+  patron: ""
+  # hexagonal_ligera | clean_architecture | capas_fastapi | mvc_simple | otro
+
+  bounded_contexts:
+    auth_users: false
+    catalog_products: false
+    orders_sales: false
+    inventory: false
+    reporting: false
+    notifications: false
+    billing_payments: false
+    appointments: false
+    users_management: false
+    custom: []
+
+  tipo_ejecucion: ""
+  # sync | async | event_driven | hybrid | streaming
+
+  justificacion_ejecucion: ""
+
+  integraciones_externas: []
+  # - nombre: "Conekta"
+  #   tipo: "payment_gateway"
+  #   protocolo: "REST"
+
+# ---------------------------------------------------------------------------
+# SECCIÓN 5 | ESTRATEGIA DE DATOS
+# required: true  |  omit_if: [tipo_entrega == "cli_tool" y sin persistencia]
+# ---------------------------------------------------------------------------
+estrategia_datos:
+  db_dev: ""
+  # sqlite | postgresql_docker | mongodb_local | mysql_docker | none
+
+  db_prod: ""
+  # postgresql | mysql | mongodb | dynamodb | cockroachdb | none
+
+  orm: ""
+  # prisma | gorm | sqlalchemy | mongoose | drizzle | none
+
+  ids: ""
+  # cuid | uuid | autoincrement | ulid
+
+  cache_server: ""
+  # redis | memcached | in_memory | none
+  cache_ttl_default: ""
+  cache_invalidation: ""
+  # manual | ttl_only | event_based | none
+
+  estado_cliente: ""
+  # zustand | react_context | redux_toolkit | jotai | none | n_a
+
+  data_fetching: ""
+  # tanstack_query | swr | htmx | server_components | axios_manual | none
+
+  retencion_dias: 0
+  soft_delete: false
+
+  backup:
+    estrategia: ""  # automated_daily | point_in_time | weekly_manual | none
+    retencion: ""
+    rpo: ""         # Recovery Point Objective
+    rto: ""         # Recovery Time Objective
+    testing: ""     # monthly | quarterly | anual | never
+
+  migraciones:
+    herramienta: ""  # alembic | prisma_migrate | golang_migrate | flyway | manual
+    estrategia: ""   # expand_contract | blue_green_db | big_bang | dual_write
+    rollback: false
+
+# ---------------------------------------------------------------------------
+# SECCIÓN 6 | FILE STORAGE & MEDIA
+# required: false  |  omit_if: [sistema sin archivos adjuntos o generados]
+# applies_to: [web_saas, hibrido, agente_ai]
+# ---------------------------------------------------------------------------
+file_storage:
+  activar: false
+  proveedor: ""
+  # s3 | gcs | azure_blob | minio | local_filesystem | none
+  bucket_strategy: ""
+  # single_bucket | multi_bucket | tenant_isolated
+  tipos_archivo: []
+  limite_tamano_mb: 0
+  cdn: false
+  cdn_proveedor: ""
+  antivirus_scan: false
+  acceso: ""          # public | private | signed_urls | mixed
+  lifecycle_dias: 0
+
+# ---------------------------------------------------------------------------
+# SECCIÓN 7 | SEARCH & INDEXING
+# required: false  |  omit_if: [sistema sin búsqueda full-text]
+# applies_to: [web_saas, hibrido, agente_ai]
+# ---------------------------------------------------------------------------
+search:
+  activar: false
+  motor: ""
+  # postgresql_fts | elasticsearch | meilisearch | algolia | typesense | none
+  tipo_busqueda: []
+  # full_text | fuzzy | semantic | filtros_faceta | autocomplete
+  indexacion: ""
+  # realtime | background | scheduled
+  vectorial: false
+  vector_db: ""
+  # pgvector | pinecone | weaviate | chroma | qdrant | none
+
+# ---------------------------------------------------------------------------
+# SECCIÓN 8 | FRONTEND, UI & TIEMPO REAL
+# required: true  |  omit_if: [tipo_entrega == "api_backend"]
+# ---------------------------------------------------------------------------
+frontend:
+  renderizado: ""
+  # react19 | jinja2 | react18_spa | wails_webview | pywebview | electron_react
+  ui_library: ""
+  # shadcn_ui | mui | antd | picocss | tailwind_headless | vuetify | none
+  estado: ""
+  # zustand | react_context | redux_toolkit | jotai | none
+  routing: ""
+  # react_router | tanstack_router | nextjs_app_router | none
+  formularios: ""
+  # react_hook_form | formik | remix-validated-form | none
+  testing_ui: ""
+  # vitest + testing-library | jest + rtl | cypress | playwright | none
+  tiempo_real: false
+  transporte_tr: ""
+  # websockets | SSE | polling | none
+
+# ---------------------------------------------------------------------------
+# SECCIÓN 9 | AUTENTICACIÓN & AUTORIZACIÓN
+# required: false  |  omit_if: []
+# ---------------------------------------------------------------------------
+auth:
+  activar: false
+  metodo: ""
+  # session | jwt | oauth2 | api_key | magic_link | passwordless
+  proveedor: ""
+  # nextauth | clerk | auth0 | supabase_auth | firebase_auth
+  # keycloak | cognito | pasaport | custom | none
+  social_login: []
+  # google | github | microsoft | apple
+  roles: false
+  permisos_finos: false
+  # RBAC | ABAC | ReBAC
+  2fa: false
+  mfa: false
+  sesiones_dispositivo: false
+  # single_session | multi_device | concurrent_limit
+
+# ---------------------------------------------------------------------------
+# SECCIÓN 10 | API & COMUNICACIÓN
+# required: true  |  omit_if: []
+# ---------------------------------------------------------------------------
+api:
+  tipo: ""
+  # rest | graphql | grpc | websocket | hybrid
+  versionado: ""
+  # url_prefix | header | content_negotiation | none
+  documentacion: ""
+  # swagger | redoc | scalar | graphql_codegen | none
+  api_gateway: ""
+  # nginx | traefik | cloudfront | apigateway | none
+  rate_limiting: ""
+  # global | por_usuario | por_endpoint | ninguno
+  paginacion: ""
+  # cursor | offset | keyset | none
+
+# ---------------------------------------------------------------------------
+# SECCIÓN 11 | AGENTES AI
+# required: false  |  omit_if: [tipo_entrega != "agente_ai"]
+# ---------------------------------------------------------------------------
+agentes_ai:
+  activar: false
+  framework: ""
+  # langchain | llamaindex | crewai | autogen | custom
+  modelos_principales: []
+  # gpt-4o | claude-3.5 | llama-3 | mixtral | gemini
+  vector_db: ""
+  herramientas: []
+  # web_search | code_execution | file_ops | api_calls
+  memoria: ""
+  # buffer | summary | vector | entity | sql | graph
+  human_in_loop: false
+  guardrails: []
+
+# ---------------------------------------------------------------------------
+# SECCIÓN 12 | MONITOREO, OBSERVABILIDAD & ALERTING
+# required: false  |  omit_if: [criticalidad == "low"]
+# ---------------------------------------------------------------------------
+observabilidad:
+  logging: ""
+  # json_stdout | file | structured | none
+  logs_centralizados: ""
+  # datadog | grafana_loki | elastic | cloudwatch | splunk | none
+  metricas: ""
+  # prometheus | datadog | cloudwatch | newrelic | grafana | none
+  tracing: ""
+  # open_telemetry | datadog_apm | sentry | none
+  alerting: ""
+  # pagerduty | opsgenie | slack | email | none
+  dashboards:
+    # - nombre: "Dashboard Producción"
+    #   herramienta: "grafana"
+    #   metricas_clave: ["latencia_p99", "tps", "error_rate_5xx"]
+    - nombre: ""
+      herramienta: ""
+      metricas_clave: []
+
+# ---------------------------------------------------------------------------
+# SECCIÓN 13 | CI/CD & DEVOPS
+# required: true  |  omit_if: [team_size == 1 && criticalidad != "critical"]
+# ---------------------------------------------------------------------------
+devops:
+  ci: ""
+  # github_actions | gitlab_ci | jenkins | circleci | none
+  cd: ""
+  # github_actions | argocd | jenkins | deployer | none
+  entornos:
+    # - dev | staging | prod
+    - ""
+  containerizacion: ""
+  # docker | podman | none
+  orquestador: ""
+  # k8s | docker_compose | swarm | nomad | none
+  infra_como_codigo: ""
+  # terraform | pulumi | cloudformation | ansible | none
+  registry: ""
+  # dockerhub | ghcr | ecr | acr | gcr | none
+  secrets: ""
+  # vault | aws_secrets_manager | github_secrets | Doppler | none
+
+# ---------------------------------------------------------------------------
+# SECCIÓN 14 | TESTING & CALIDAD
+# required: true  |  omit_if: []
+# ---------------------------------------------------------------------------
+testing:
+  unitario: ""
+  framework: ""
+  comando: ""
+  integracion: ""
+  e2e: ""
+  carga: ""
+  # k6 | artillery | locust | jmeter | none
+  cobertura_minima: 0    # porcentaje
+  linting: ""
+  formateo: ""
+  type_checking: ""
+  calidad: ""
+  # sonarqube | codeclimate | codacy | none
+
+# ---------------------------------------------------------------------------
+# SECCIÓN 15 | SEGURIDAD
+# required: false  |  omit_if: [criticalidad == "low"]
+# ---------------------------------------------------------------------------
+seguridad:
+  cifrado_reposo: false
+  cifrado_transito: true   # TLS por defecto
+  cifrado_algoritmo: ""
+  # aes-256 | chaCha20 | none
+  secrets_scan: false
+  dependecias_scan: false
+  # snyk | dependabot | trivy | owasp_dependency_check
+  pentesting: ""
+  # monthly | quarterly | anual | never
+  bug_bounty: false
+  cumplimiento: []
+  # GDPR | LFPDPPP | SOC2 | HIPAA | PCI_DSS
+
+# ---------------------------------------------------------------------------
+# SECCIÓN 16 | FEATURE REGISTRY
+# required: true  |  omit_if: []
+# ---------------------------------------------------------------------------
+features:
+  - id: "F-001"
+    nombre: ""
+    descripcion: ""
+    prioridad: ""             # critical | high | medium | low
+    dependencias: []          # IDs de features requeridas antes
+    historias_usuario:
+      - "Como [rol], quiero [acción] para [beneficio]"
+    acceptance_criteria:
+      - ""
+    estimacion: ""            # S | M | L | XL | ? (incierta)
+    categoría: ""             # core | enhancement | compliance | tech_debt
+
+# ---------------------------------------------------------------------------
+# SECCIÓN 17 | ARCHITECTURE DECISION RECORDS
+# required: true  |  omit_if: []
+# ---------------------------------------------------------------------------
+architecture_decisions:
+  - id: "AD-001"
+    titulo: ""
+    estado: ""                # proposed | accepted | deprecated | superseded
+    contexto: ""
+    decision: ""
+    consecuencias: ""
+    alternativas: []
+    superseded_by: ""
+
+# ---------------------------------------------------------------------------
+# SECCIÓN 18 | TECHNICAL REQUIREMENTS
+# required: false  |  omit_if: []
+# ---------------------------------------------------------------------------
+technical_requirements:
+  - id: "TR-001"
+    titulo: ""
+    detalle: ""
+    tipo: ""                  # performance | scalability | security | compliance
+    criterio_verificacion: ""
+    metricas:
+      - nombre: ""
+        objetivo: ""
+        unidad: ""
+
+# ---------------------------------------------------------------------------
+# SECCIÓN 19 | RIESGOS
+# required: true  |  omit_if: []
+# ---------------------------------------------------------------------------
+riesgos:
+  - id: "R-001"
+    descripcion: ""
+    probabilidad: ""          # low | medium | high
+    impacto: ""               # low | medium | high
+    plan_mitigacion: ""
+    plan_contingencia: ""
+    responsable: ""

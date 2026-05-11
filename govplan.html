@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>sdd-govplan — Governance Planning para SDD</title>
+  <style>
+    :root {
+      --bg: #0d1117;
+      --bg-card: #161b22;
+      --border: #30363d;
+      --text: #e6edf3;
+      --text-muted: #8b949e;
+      --accent: #58a6ff;
+      --accent-green: #3fb950;
+      --accent-orange: #d29922;
+      --accent-purple: #bc8cff;
+      --accent-red: #f85149;
+      --radius: 8px;
+      --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+      --mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      line-height: 1.7;
+      padding: 40px 20px;
+    }
+    .container {
+      max-width: 860px;
+      margin: 0 auto;
+    }
+    h1 {
+      font-size: 2.2rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.25em;
+    }
+    h1 .badge {
+      display: inline-block;
+      font-size: 0.55em;
+      font-weight: 600;
+      background: #1f6feb22;
+      color: var(--accent);
+      border: 1px solid #1f6feb44;
+      padding: 0.15em 0.7em;
+      border-radius: 20px;
+      vertical-align: middle;
+      margin-left: 12px;
+    }
+    .subtitle {
+      color: var(--text-muted);
+      font-size: 1.05rem;
+      margin-bottom: 2rem;
+      border-left: 3px solid var(--accent);
+      padding-left: 1rem;
+    }
+    .section-title {
+      font-size: 1.3rem;
+      font-weight: 600;
+      margin: 2.5rem 0 1rem 0;
+      padding-bottom: 0.4rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .section-title .icon { font-size: 1.2rem; }
+
+    /* Cards */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 1rem;
+    }
+    .card-title {
+      font-weight: 600;
+      font-size: 1.05rem;
+      margin-bottom: 0.5rem;
+    }
+
+    /* Flow diagram */
+    .flow {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+      padding: 1.25rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin-bottom: 1.5rem;
+      font-size: 0.9rem;
+    }
+    .flow-step {
+      background: #1f6feb22;
+      border: 1px solid #1f6feb44;
+      padding: 0.35em 0.8em;
+      border-radius: 6px;
+      font-weight: 500;
+      color: var(--accent);
+    }
+    .flow-step.green { background: #3fb95022; border-color: #3fb95044; color: var(--accent-green); }
+    .flow-step.purple { background: #bc8cff22; border-color: #bc8cff44; color: var(--accent-purple); }
+    .flow-step.orange { background: #d2992222; border-color: #d2992244; color: var(--accent-orange); }
+    .flow-step.dim { background: transparent; border-color: var(--border); color: var(--text-muted); }
+    .flow-arrow { color: var(--text-muted); font-size: 1.1rem; }
+
+    /* Q&A */
+    .qa { margin-bottom: 0.75rem; }
+    .qa-q {
+      font-weight: 600;
+      color: var(--accent);
+      cursor: default;
+      padding: 0.5rem 0;
+    }
+    .qa-q::before { content: "Q: "; opacity: 0.6; }
+    .qa-a {
+      color: var(--text);
+      padding: 0 0 0.5rem 1.2rem;
+      border-left: 2px solid var(--border);
+      margin-left: 0.3rem;
+      padding-left: 1rem;
+    }
+    .qa-a::before { content: "R: "; opacity: 0.4; color: var(--accent-green); }
+
+    /* Code */
+    code {
+      font-family: var(--mono);
+      background: #1c2128;
+      padding: 0.15em 0.5em;
+      border-radius: 4px;
+      font-size: 0.88em;
+      border: 1px solid #30363d;
+    }
+    pre {
+      background: #1c2128;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem 1.25rem;
+      overflow-x: auto;
+      font-family: var(--mono);
+      font-size: 0.85rem;
+      line-height: 1.5;
+      margin: 0.75rem 0;
+    }
+    .tag {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.15em 0.6em;
+      border-radius: 4px;
+      margin-right: 4px;
+    }
+    .tag-blue { background: #1f6feb33; color: var(--accent); }
+    .tag-green { background: #3fb95033; color: var(--accent-green); }
+    .tag-purple { background: #bc8cff33; color: var(--accent-purple); }
+    .tag-orange { background: #d2992233; color: var(--accent-orange); }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 0.75rem 0;
+      font-size: 0.9rem;
+    }
+    th, td {
+      border: 1px solid var(--border);
+      padding: 0.5rem 0.75rem;
+      text-align: left;
+    }
+    th { background: #1c2128; font-weight: 600; }
+
+    hr {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 2rem 0;
+    }
+    .footer {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      text-align: center;
+      margin-top: 3rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+    }
+    @media (max-width: 600px) {
+      body { padding: 20px 12px; }
+      h1 { font-size: 1.6rem; }
+      .flow { font-size: 0.8rem; gap: 4px; }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <h1>sdd-govplan <span class="badge">v2.0</span></h1>
+  <div class="subtitle">
+    Governance Planning para Spec-Driven Development &mdash; la capa de gobernabilidad
+    que captura contexto, features, arquitectura y criterios de aceptaci&oacute;n antes del SDD pipeline.
+  </div>
+
+  <!-- ===== FLUJO ===== -->
+  <div class="section-title"><span class="icon">&#9733;</span> Flujo completo</div>
+  <div class="flow">
+    <span class="flow-step dim">sdd-init</span>
+    <span class="flow-arrow">&rarr;</span>
+    <span class="flow-step green">sdd-govplan</span>
+    <span class="flow-arrow">&rarr;</span>
+    <span class="flow-step purple">sdd-propose</span>
+    <span class="flow-arrow">&rarr;</span>
+    <span class="flow-step">sdd-spec</span>
+    <span class="flow-arrow">&rarr;</span>
+    <span class="flow-step orange">sdd-design</span>
+    <span class="flow-arrow">&rarr;</span>
+    <span class="flow-step">sdd-tasks</span>
+    <span class="flow-arrow">&rarr;</span>
+    <span class="flow-step">sdd-apply</span>
+    <span class="flow-arrow">&rarr;</span>
+    <span class="flow-step">sdd-verify</span>
+    <span class="flow-arrow">&rarr;</span>
+    <span class="flow-step dim">sdd-archive</span>
+  </div>
+
+  <!-- ===== BRIEF MODES ===== -->
+  <div class="section-title"><span class="icon">&#9881;</span> Modos de brief — LITE / STANDARD / FULL</div>
+  <div class="card">
+    <p style="margin-bottom: 0.75rem;">
+      Para evitar sobreingenier&iacute;a, <code>sdd-govplan</code> se adapta al proyecto.
+      La auto-detecci&oacute;n resuelve el modo seg&uacute;n las primeras respuestas,
+      o pod&eacute;s forzarlo con flags:
+    </p>
+    <table>
+      <tr>
+        <th>Modo</th>
+        <th>Secciones</th>
+        <th>Preguntas</th>
+        <th>Ideal para</th>
+        <th>Flag</th>
+      </tr>
+      <tr>
+        <td><span class="tag tag-green">LITE</span></td>
+        <td>7</td>
+        <td>~6-8</td>
+        <td>CLI tools, MVPs, protos, APIs simples</td>
+        <td><code>--lite</code> / <code>-l</code></td>
+      </tr>
+      <tr>
+        <td><span class="tag tag-orange">STANDARD</span></td>
+        <td>11</td>
+        <td>~12-15</td>
+        <td>Web apps, equipos 2-5, proyectos medianos</td>
+        <td><code>--standard</code> / <code>-s</code></td>
+      </tr>
+      <tr>
+        <td><span class="tag tag-blue">FULL</span></td>
+        <td>19</td>
+        <td>~20-25</td>
+        <td>Sistemas cr&iacute;ticos, equipos 6+, high/critical</td>
+        <td><code>--full</code> / <code>-f</code></td>
+      </tr>
+    </table>
+    <p style="margin-top: 0.75rem; color: var(--text-muted); font-size: 0.9rem;">
+      <strong>Auto-detecci&oacute;n:</strong> <code>cli_tool + 1 persona + mvp-2sem &rarr; LITE</code> &bull;
+      <code>web_saas + 2-5 + medium-3mes &rarr; STANDARD</code> &bull;
+      <code>6+ / critical / long-6mes+ &rarr; FULL</code><br>
+      El usuario puede cambiar de modo en cualquier momento diciendo
+      <em>"cambiar a lite"</em> o <em>"cambiar a full"</em>.
+    </p>
+  </div>
+
+  <!-- ===== Q&A ===== -->
+  <div class="section-title"><span class="icon">&#10067;</span> Preguntas frecuentes</div>
+
+  <div class="qa">
+    <div class="qa-q">&iquest;Por cu&aacute;l empiezo: <code>sdd-govplan</code> o <code>sdd-init</code>?</div>
+    <div class="qa-a">
+      <strong>Da igual.</strong> El orchestrator tiene un <strong>SDD Init Guard</strong> que, cuando ejecut&aacute;s
+      <code>/sdd-govplan</code>, verifica autom&aacute;ticamente si el proyecto ya tiene init.
+      Si no lo tiene, lo corre silenciosamente primero y despu&eacute;s arranca con el governance planning.
+      No ten&eacute;s que pensar en el orden.
+    </div>
+  </div>
+
+  <div class="qa">
+    <div class="qa-q">&iquest;Qu&eacute; diferencia hay entre <code>sdd-init</code> y <code>sdd-govplan</code>?</div>
+    <div class="qa-a">
+      <code>sdd-init</code> es <strong>infraestructura</strong>: detecta el stack del proyecto, las herramientas
+      de testing, configura la persistencia (engram / openspec).<br>
+      <code>sdd-govplan</code> es <strong>contenido</strong>: te hace preguntas estructuradas para entender
+      <em>qu&eacute;</em> vas a construir y <em>por qu&eacute;</em>, y genera el project brief con features,
+      decisiones de arquitectura, criterios de aceptaci&oacute;n y tareas de alto nivel.<br><br>
+      Uno prepara el terreno, el otro define el rumbo.
+    </div>
+  </div>
+
+  <div class="qa">
+    <div class="qa-q">&iquest;Skill o agente? &iquest;Por qu&eacute; skill?</div>
+    <div class="qa-a">
+      <strong>Skill</strong>. Porque:
+      <ul style="margin-top:0.3em;padding-left:1.5em">
+        <li>Integra naturalmente con el flujo del orchestrator (via <code>skill()</code> tool)</li>
+        <li>El orchestrator maneja la conversaci&oacute;n &eacute;l mismo (preguntar no infla el contexto)</li>
+        <li>Delega investigaci&oacute;n pesada a sub-agents existentes (<code>sdd-explore</code>)</li>
+        <li>No necesita un nuevo sub-agent type ni registro adicional en <code>opencode.json</code></li>
+        <li>Sigue el patr&oacute;n de las dem&aacute;s skills SDD (mismo ORCHESTRATOR GATE, mismo contrato de persistencia)</li>
+      </ul>
+      Un agente nuevo requerir&iacute;a registrarlo en <code>opencode.json</code> con modelo, tools y permisos.
+      Al pedo si el orchestrator puede hacer el trabajo pesado de coordinaci&oacute;n.
+    </div>
+  </div>
+
+  <div class="qa">
+    <div class="qa-q">&iquest;Qu&eacute; archivos genera <code>sdd-govplan</code>?</div>
+    <div class="qa-a">
+      Depende del modo de persistencia:
+      <table>
+        <tr><th>Modo</th><th>Ubicaci&oacute;n</th></tr>
+        <tr><td><code class="tag tag-blue">openspec</code></td><td><code>governance/project-brief.yaml</code> + <code>governance/PRD.md</code></td></tr>
+        <tr><td><code class="tag tag-green">engram</code></td><td><code>sdd/govplan/{project}/brief</code> + <code>sdd/govplan/{project}/prd</code></td></tr>
+        <tr><td><code class="tag tag-purple">hybrid</code></td><td>Ambos</td></tr>
+        <tr><td><code class="tag tag-orange">none</code></td><td>Solo inline, no persiste</td></tr>
+      </table>
+      El template completo tiene <strong>35 secciones</strong> organizadas en: metadata, negocio, stakeholders,
+      arquitectura, datos, file storage, search, frontend, auth, API, agentes AI, observabilidad, CI/CD,
+      testing, seguridad, features registry, ADRs, requisitos t&eacute;cnicos y riesgos.
+    </div>
+  </div>
+
+  <div class="qa">
+    <div class="qa-q">&iquest;C&oacute;mo se decide si usar LITE, STANDARD o FULL?</div>
+    <div class="qa-a">
+      Se auto-detecta seg&uacute;n las primeras respuestas. Si pon&eacute;s
+      <code>cli_tool + team_size: 1 + timeframe: mvp-2sem</code> autom&aacute;ticamente
+      entra en <strong>LITE</strong> (~6 preguntas, 5 minutos).<br><br>
+      Si el proyecto es un <code>web_saas + critical + 15+</code> salta a
+      <strong>FULL</strong> (19 secciones completas).<br><br>
+      Tambi&eacute;n pod&eacute;s forzar con flags:
+      <code>/sdd-govplan --lite</code>, <code>/sdd-govplan --standard</code>,
+      <code>/sdd-govplan --full</code>. O cambi&aacute;s de modo durante la
+      conversaci&oacute;n diciendo <em>"cambiar a full"</em>.
+    </div>
+  </div>
+
+  <div class="qa">
+    <div class="qa-q">&iquest;Qu&eacute; pasa si el proyecto es greenfield (no hay c&oacute;digo)?</div>
+    <div class="qa-a">
+      Se saltea la <strong>Fase 2</strong> (Codebase Exploration). El governance planning se basa
+      &uacute;nicamente en las respuestas de la conversaci&oacute;n. Para proyectos brownfield o migraci&oacute;n,
+      la exploraci&oacute;n del codebase es <strong>obligatoria</strong> y se delega a <code>sdd-explore</code>.
+    </div>
+  </div>
+
+  <div class="qa">
+    <div class="qa-q">&iquest;C&oacute;mo se conecta con el resto del pipeline SDD?</div>
+    <div class="qa-a">
+      Cada <strong>feature</strong> identificada en el governance brief se convierte en un
+      <strong>SDD change</strong>. El flujo es:
+      <pre>govplan &rarr; sdd-propose &rarr; sdd-spec &rarr; sdd-design &rarr; sdd-tasks &rarr; sdd-apply &rarr; sdd-verify &rarr; sdd-archive</pre>
+      Las <strong>architecture decisions</strong> alimentan <code>sdd-design</code> como ADRs.
+      Los <strong>acceptance criteria</strong> alimentan <code>sdd-verify</code> como checkpoints.
+      Los <strong>technical requirements</strong> alimentan <code>sdd-spec</code> como escenarios.
+    </div>
+  </div>
+
+  <div class="qa">
+    <div class="qa-q">&iquest;D&oacute;nde est&aacute; instalado?</div>
+    <div class="qa-a">
+      En dos lugares para cobertura global:
+      <ul style="margin-top:0.3em;padding-left:1.5em">
+        <li><code>~/.config/opencode/skills/sdd-govplan/</code> &mdash; skills de OpenCode</li>
+        <li><code>~/.agents/skills/sdd-govplan/</code> &mdash; skills globales del ecosistema Gentle AI</li>
+      </ul>
+      El orchestrator lo encuentra via <code>available_skills</code> porque est&aacute; registrado en
+      <code>AGENTS.md</code> y el prompt en <code>opencode.json</code> fue actualizado.
+    </div>
+  </div>
+
+  <hr>
+
+  <!-- ===== COMMANDS ===== -->
+  <div class="section-title"><span class="icon">&#9881;</span> Comandos disponibles</div>
+  <div class="card">
+    <div class="card-title">Meta-commands (escribe directamente)</div>
+    <table>
+      <tr><th>Comando</th><th>Descripci&oacute;n</th></tr>
+      <tr><td><code>/sdd-govplan</code></td><td>Arranca governance planning interactivo</td></tr>
+      <tr><td><code>/sdd-govplan Quiero construir X</code></td><td>Arranca con la idea pre-cargada</td></tr>
+      <tr><td><code>/sdd-new &lt;change&gt;</code></td><td>Crea un SDD change nuevo (post-governance)</td></tr>
+      <tr><td><code>/sdd-ff &lt;name&gt;</code></td><td>Fast-forward planning (proposal &rarr; specs &rarr; design &rarr; tasks)</td></tr>
+    </table>
+  </div>
+
+  <!-- ===== ARCHITECTURE ===== -->
+  <div class="section-title"><span class="icon">&#128736;</span> Decisiones de arquitectura</div>
+  <div class="card">
+    <table>
+      <tr><th>Decisi&oacute;n</th><th>Opci&oacute;n</th><th>Por qu&eacute;</th></tr>
+      <tr>
+        <td>Tipo</td>
+        <td><span class="tag tag-blue">Skill</span></td>
+        <td>No necesita nuevo sub-agent type; el orchestrator maneja la conversaci&oacute;n y delega investigaci&oacute;n a existentes</td>
+      </tr>
+      <tr>
+        <td>Ubicaci&oacute;n global</td>
+        <td><span class="tag tag-green">Dos directorios</span></td>
+        <td>`.config/opencode/skills/` + `.agents/skills/` para m&aacute;xima cobertura</td>
+      </tr>
+      <tr>
+        <td>Persistencia</td>
+        <td><span class="tag tag-purple">engram / openspec</span></td>
+        <td>Sigue el mismo artifact store policy que el resto del SDD pipeline</td>
+      </tr>
+      <tr>
+        <td>Conversaci&oacute;n</td>
+        <td><span class="tag tag-orange">Inline (orchestrator)</span></td>
+        <td>Preguntar una cosa a la vez no infla contexto; investigar muchas cosas s&iacute; (se delega)</td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- ===== FILES ===== -->
+  <div class="section-title"><span class="icon">&#128196;</span> Archivos del skill</div>
+  <div class="card">
+    <table>
+      <tr><th>Archivo</th><th>Rol</th></tr>
+      <tr><td><code>SKILL.md</code></td><td>Instrucciones completas del governance planning flow</td></tr>
+      <tr><td><code>assets/project-brief-template.yaml</code></td><td>Template de 35 secciones para el project brief</td></tr>
+      <tr><td><code>AGENTS.md</code></td><td>Registro del skill en Available Skills</td></tr>
+      <tr><td><code>opencode.json</code></td><td>Prompt del orchestrator actualizado con el nuevo comando</td></tr>
+    </table>
+  </div>
+
+  <div class="footer">
+    sdd-govplan &mdash; Gentle AI &mdash; Spec-Driven Development
+  </div>
+
+</div>
+</body>
+</html>
