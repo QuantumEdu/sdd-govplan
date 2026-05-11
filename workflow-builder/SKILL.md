@@ -66,16 +66,64 @@ live in `.agent/skills/{workflow-name}/` under this directory.
 
 Ask ONE question at a time. Determine:
 
-1. **Project name** — short kebab-case name (e.g., `tesis-ia-educacion`, `consultoria-iso-27001`)
-2. **Project type** — is it one of the known types (thesis, consulting, pnl-coaching, career-coaching) or custom?
+1. **Project name** — short kebab-case name (e.g., `tesis-ia-educacion`, `consultoria-iso-27001`, `pnl-coaching-2026`)
+
+2. **Project type** — is it one of the known types or something else?
+   Known: thesis, consulting, pnl-coaching, career-coaching.
+
 3. **If known type**: Load the template from `assets/templates/{type}.yaml`, show the phases to the user, and ask: *"Este flujo tiene {N} fases. ¿Querés agregar, quitar, renombrar o reordenar alguna?"*
-4. **If custom**: Ask the user to describe each phase, one at a time:
-   - *"Describime la fase 1: ¿cómo se llama? ¿qué se hace acá?"*
-   - *"¿Qué outputs genera esta fase?"*
-   - *"¿Cuál es el criterio para darla por completada?"*
-   - Repeat until user says "no hay más fases"
+
+4. **If custom or unknown**: Ask: *"¿Conocés el flujo de trabajo o querés que investigue?"*
+   - **If user knows the flow**: Ask them to describe each phase (same as before).
+   - **If user doesn't know the flow**: ENTER RESEARCH MODE (see below).
+
 5. **Ask about execution mode**:
    - *"¿Querés que ejecute las fases una por una (interactivo) o que genere todas las skills primero y las ejecutamos después?"*
+
+#### Research Mode (for unknown workflows)
+
+When the user doesn't know the flow, investigate and propose one:
+
+**Step A — Gather context**:
+Ask questions to understand the domain:
+- *"¿Cuál es el objetivo principal del proyecto?"*
+- *"¿Hay algún estándar, metodología o marco de trabajo que deberíamos considerar? (ISO, PMI, Scrum, Design Thinking, PDCA, etc.)"*
+- *"¿Qué entregables o resultados esperás obtener al final?"*
+- *"¿Hay algún documento, libro o referencia que describa el proceso ideal?"*
+
+**Step B — Research** (use websearch + model knowledge):
+- Search for methodologies, standards, and workflows related to the domain
+- Examples of research queries:
+  - "ISO 27001 implementation methodology phases" → gap analysis, risk assessment, control selection, etc.
+  - "Design Thinking process steps" → empathize, define, ideate, prototype, test
+  - "metodología de estudio de mercado fases" → exploración, segmentación, encuesta, análisis
+  - "Lean Startup methodology phases" → build-measure-learn cycle
+  - "Scientific research methodology steps" → problem, hypothesis, experiment, analysis, conclusion
+  - "Six Sigma DMAIC phases" → define, measure, analyze, improve, control
+
+**Step C — Synthesize a proposal**:
+Based on research + model knowledge, propose a structured workflow:
+
+```markdown
+Basado en lo que investigué sobre {metodología/estándar/enfoque},
+te propongo el siguiente flujo de {N} fases:
+
+1. {Fase 1} — {descripción breve}
+2. {Fase 2} — {descripción breve}
+...
+```
+
+If you find multiple valid approaches, present options:
+*"Encontré dos enfoques posibles: {opción A} y {opción B}. ¿Cuál se acerca más a lo que necesitás?"*
+
+**Step D — Validate with the user**:
+- *"¿Este flujo se ajusta a lo que necesitás?"*
+- User can: accept, adjust (add/remove/reorder phases), or reject and describe manually
+- If user adjusts, incorporate feedback immediately
+- If user rejects, fall back to manual phase description
+
+**Step E — Confirm and proceed**:
+Once validated, the workflow is ready for generation. Show the summary and ask for final confirmation.
 
 Show a summary before generating:
 ```

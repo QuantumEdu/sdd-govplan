@@ -1,16 +1,26 @@
 # Gentle AI Meta-Skills
 
-Colección de skills avanzadas para **Gentle AI** que extienden el pipeline de Spec-Driven Development (SDD) con capacidades de **governance planning** y **workflow builder** para proyectos de cualquier tipo.
+Colección de skills para **Gentle AI** que extienden sus capacidades más allá del pipeline de software.
+
+```
+📦 sdd-govplan/
+├── 📄 README.md
+├── 📁 sdd-govplan/            ← Governance planning para proyectos de SOFTWARE
+│   ├── SKILL.md
+│   ├── govplan.html
+│   └── assets/
+└── 📁 workflow-builder/       ← Workflow builder para CUALQUIER tipo de proyecto
+    ├── SKILL.md
+    └── assets/
+        ├── phase-skill-template.md
+        └── templates/
+```
 
 ---
 
-## Skills incluidas
+## 1 · `sdd-govplan` — Governance para Software
 
-### 1. `sdd-govplan` — Governance Planning
-
-**Para proyectos de SOFTWARE.** Capa de gobernabilidad que captura contexto del proyecto, features, decisiones de arquitectura, criterios de aceptación y requisitos técnicos ANTES del pipeline SDD estándar.
-
-Inspirado en AWS Well-Architected / DLC y el flujo `/plan` de Kiro CLI.
+Capa de gobernabilidad que captura contexto, features, decisiones de arquitectura y criterios de aceptación ANTES del pipeline SDD. Inspirado en AWS Well-Architected / DLC.
 
 ```
 /sdd-govplan --lite               # Modo breve (CLI, MVPs, protos)
@@ -36,54 +46,62 @@ sdd-init → sdd-govplan → sdd-propose → sdd-spec → sdd-design → sdd-tas
 
 ---
 
-### 2. `workflow-builder` — Custom Workflow Builder
+## 2 · `workflow-builder` — Workflows para Cualquier Proyecto
 
-**Para proyectos de CUALQUIER tipo** — no solo software. Crea dinámicamente flujos de trabajo personalizados con skills generadas para cada fase.
-
-Ideal para: tesis académicas, consultoría ISO 27001, coaching PNL, coaching de carrera, investigaciones, y cualquier proceso multi-fase.
+Crea dinámicamente flujos de trabajo personalizados con skills generadas para CADA FASE. Ideal para proyectos que NO son de software.
 
 ```
-/workflow-builder                         # Inicia entrevista para definir el workflow
+/workflow-builder                         # Inicia entrevista
 /workflow-builder "Tesis sobre IA"        # Con nombre prefijado
-/workflow continue                        # Ejecuta la siguiente fase pendiente
-/workflow status                          # Muestra progreso del workflow actual
+/workflow continue                        # Ejecuta siguiente fase
+/workflow status                          # Muestra progreso
 ```
 
-**Templates incluidos**:
+### Modo Investigación (NUEVO)
+
+Cuando **no conocés el flujo de trabajo**, el agente investiga por vos:
+
+```
+/workflow-builder
+
+[1]: ¿Qué tipo de proyecto?
+> Quiero implementar ISO 27001 en una empresa
+
+[2]: ¿Conocés el flujo o querés que investigue?
+> No lo conozco, investigá
+
+→ El agente busca: ISO 27001 implementation methodology, PDCA cycle
+→ Propone: diagnóstico → SGSI →风险评估 → controles → implementación → auditoría → certificación
+→ Vos validás, ajustás, y se generan las skills
+```
+
+**Qué investiga según el dominio:**
+
+| Domain | Investiga | Propone |
+|--------|-----------|---------|
+| Estándares (ISO, COBIT) | Fases de implementación, requisitos de certificación | Gap analysis → implementación → auditoría |
+| Metodologías ágiles | Scrum, Kanban, SAFe | Sprint planning → daily → review → retro |
+| Investigación científica | Método científico, metodologías | Problema → hipótesis → experimento → conclusión |
+| Design Thinking | Proceso de diseño centrado en humano | Empatizar → definir → idear → prototipar → testear |
+| Lean / Six Sigma | DMAIC, value stream mapping | Define → measure → analyze → improve → control |
+| Cualquier dominio no listado | Búsqueda web + conocimiento del modelo | Flujo propuesto + opciones alternativas |
+
+### Templates incluidos
 
 | Tipo | Fases | Descripción |
 |------|-------|-------------|
-| **Thesis / Investigación** | 8 | problema → objetivos → justificación → marco teórico → metodología → análisis → redacción APA → referencias |
-| **Consultoría (ISO 27001, etc.)** | 6 | diagnóstico → plan de acción → implementación → evaluación → mejora continua → cierre |
+| **Thesis** | 8 | problema → objetivos → justificación → marco teórico → metodología → análisis → redacción APA → referencias |
+| **Consulting** | 6 | diagnóstico → plan de acción → implementación → evaluación → mejora continua → cierre |
 | **PNL Coaching** | 5 | línea base → objetivos → ejercicios → seguimiento → evaluación |
 | **Career Coaching** | 5 | autoevaluación → exploración → plan de carrera → ejecución → revisión |
-| **Custom** | a definir | El usuario describe cada fase y se genera automáticamente |
+| **Custom / Investigado** | a definir | El usuario describe o el agente investiga y propone |
 
-**Cómo funciona**:
-```
-/workflow-builder
-  │
-  ├── Fase 1: Entrevista (orchestrator pregunta)
-  │   • Tipo de proyecto → elige template o custom
-  │   • Ajusta fases, nombres, actividades, outputs
-  │
-  ├── Fase 2: Generación
-  │   • Crea .agent/skills/{workflow-name}/workflow.yaml
-  │   • Crea SKILL.md por cada fase
-  │   • Crea progress.yaml para seguimiento
-  │
-  └── Fase 3: Ejecución (/workflow continue)
-      • Carga la skill de la fase actual
-      • La ejecuta
-      • Actualiza progreso
-      • Avanza a la siguiente
-```
+### Archivos generados por proyecto
 
-**Archivos generados por proyecto**:
 ```
 .agent/skills/{workflow-name}/
-├── workflow.yaml           ← Definición del DAG de fases
-├── progress.yaml           ← Estado actual de ejecución
+├── workflow.yaml           ← DAG de fases
+├── progress.yaml           ← Estado de ejecución
 ├── phase-001-slug.SKILL.md ← Skill para fase 1
 ├── phase-002-slug.SKILL.md ← Skill para fase 2
 └── ...
@@ -95,33 +113,29 @@ Ideal para: tesis académicas, consultoría ISO 27001, coaching PNL, coaching de
 
 | Si tu proyecto es... | Usá |
 |---------------------|-----|
-| Una app, API, o sistema de software | `/sdd-govplan` → pipeline SDD |
-| Una tesis o investigación académica | `/workflow-builder` |
-| Una consultoría empresarial | `/workflow-builder` |
+| App, API, o sistema de software | `/sdd-govplan` |
+| Tesis o investigación académica | `/workflow-builder` |
+| Consultoría empresarial | `/workflow-builder` |
 | Coaching de carrera o PNL | `/workflow-builder` |
-| Un proyecto que no es código pero tiene fases | `/workflow-builder` |
-| Una mezcla de software + consultoría | Ambos: primero `/sdd-govplan` para el software, después `/workflow-builder` para el resto |
+| No sabés por dónde arrancar | `/workflow-builder` → modo investigación |
+| Proyecto sin código con fases | `/workflow-builder` |
 
 ---
 
 ## Instalación global
 
-Las skills se instalan en los directorios globales de Gentle AI:
-
 ```
 ~/.config/opencode/skills/
-├── sdd-govplan/          ← Governance para software
+├── sdd-govplan/
 │   ├── SKILL.md
 │   ├── govplan.html
 │   └── assets/
-└── workflow-builder/     ← Workflows para cualquier proyecto
+└── workflow-builder/
     ├── SKILL.md
     └── assets/
         ├── phase-skill-template.md
         └── templates/
 ```
-
-Y en la copia de cobertura global:
 
 ```
 ~/.agents/skills/
@@ -129,19 +143,16 @@ Y en la copia de cobertura global:
 └── workflow-builder/
 ```
 
-Registradas en `AGENTS.md` para que el orchestrator las encuentre via `available_skills`.
+Registradas en `AGENTS.md`.
 
 ---
 
 ## Repositorio
 
-Este repo contiene el código fuente de ambas skills.
+**https://github.com/QuantumEdu/sdd-govplan**
 
-```
-sdd-govplan/               ← Skill de governance planning (software)
-workflow-builder/          ← Skill de workflow builder (universal)
-```
+```sdd-govplan```
 
 ## License
 
-MIT — parte del ecosistema [Gentle AI](https://github.com/gentleman-programming/gentle-ai)
+MIT — ecosistema [Gentle AI](https://github.com/gentleman-programming/gentle-ai)
