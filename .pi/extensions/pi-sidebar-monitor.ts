@@ -79,6 +79,7 @@ const state: MonitorState = {
 let autoShow = true;
 let panelInstance: MonitorPanel | undefined;
 let requestRender: (() => void) | undefined;
+let gitRefreshInterval: ReturnType<typeof setInterval> | undefined;
 
 /* ------------------------------------------------------------------ */
 /*  Panel lateral (overlay)                                           */
@@ -499,6 +500,11 @@ export default function (pi: ExtensionAPI) {
 			state.toolErrors++;
 		}
 
+		/* Refrescar git si una tool pudo haber modificado el repo */
+		if (["write", "edit", "bash", "exec"].includes(event.toolName)) {
+			void refreshGit(ctx.cwd);
+		}
+
 		refreshPanel();
 	});
 
@@ -576,6 +582,9 @@ export default function (pi: ExtensionAPI) {
 
 		/* Git en background */
 		void refreshGit(ctx.cwd);
+		gitRefreshInterval = setInterval(() => {
+			void refreshGit(ctx.cwd);
+		}, 5000);
 
 		/* Widget */
 		refreshWidget(ctx);
@@ -589,6 +598,10 @@ export default function (pi: ExtensionAPI) {
 	pi.on("session_shutdown", () => {
 		panelInstance = undefined;
 		requestRender = undefined;
+		if (gitRefreshInterval) {
+			clearInterval(gitRefreshInterval);
+			gitRefreshInterval = undefined;
+		}
 	});
 
 	/* ---- Comando /monitor ---- */
