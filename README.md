@@ -1,83 +1,147 @@
-# sdd-govplan
+# Gentle AI Meta-Skills
 
-**Governance Planning for Spec-Driven Development**
+Colección de skills avanzadas para **Gentle AI** que extienden el pipeline de Spec-Driven Development (SDD) con capacidades de **governance planning** y **workflow builder** para proyectos de cualquier tipo.
 
-`sdd-govplan` is a Gentle AI skill that adds a **governance layer** to the SDD pipeline. It runs BEFORE the standard phases (propose → spec → design → tasks → apply → verify → archive) and captures project context through structured conversation, then generates governance artifacts.
+---
 
-Inspired by AWS Well-Architected / DLC governance frameworks and Kiro CLI's `/plan` flow.
+## Skills incluidas
 
-## How It Works
+### 1. `sdd-govplan` — Governance Planning
+
+**Para proyectos de SOFTWARE.** Capa de gobernabilidad que captura contexto del proyecto, features, decisiones de arquitectura, criterios de aceptación y requisitos técnicos ANTES del pipeline SDD estándar.
+
+Inspirado en AWS Well-Architected / DLC y el flujo `/plan` de Kiro CLI.
 
 ```
-/sdd-govplan "Quiero construir una API de facturación"
-    │
-    ├── Phase 1: Structured Q&A (orchestrator asks one question at a time)
-    │   • Stack & Context → Business Problem → Stakeholders
-    │   → Architecture → Data Strategy → Security → etc.
-    │
-    ├── Phase 2: Codebase Exploration (delegates to sdd-explore)
-    │   • Only for brownfield/migration projects
-    │
-    ├── Phase 3: Generate Governance Artifacts
-    │   • project-brief.yaml — 35-section structured brief
-    │   • PRD.md — Product Requirements Document
-    │   • Feature Registry — with acceptance criteria
-    │   • Architecture Decision Records
-    │
-    └── Phase 4: Bootstrap SDD Changes
-        • Each feature → one SDD change (sdd-propose → sdd-spec → ...)
-        • Architecture decisions → feed sdd-design
-        • Acceptance criteria → feed sdd-verify
+/sdd-govplan --lite               # Modo breve (CLI, MVPs, protos)
+/sdd-govplan --standard           # Modo estándar (web apps, equipos 2-5)
+/sdd-govplan --full               # Modo completo (sistemas críticos)
+/sdd-govplan "API de facturación" # Con idea pre-cargada
 ```
 
-## Files
+**Auto-detección**: según `tipo_entrega`, `team_size`, `criticalidad`, `timeframe` resuelve automáticamente LITE / STANDARD / FULL.
 
-| File | Description |
-|------|-------------|
-| `SKILL.md` | Main skill file — orchestrator instructions for governance planning |
-| `assets/project-brief-template.yaml` | 35-section template covering all project aspects |
-| `govplan.html` | Interactive reference page with FAQ and architecture |
-
-## Pipeline Integration
-
+**Pipeline**:
 ```
 sdd-init → sdd-govplan → sdd-propose → sdd-spec → sdd-design → sdd-tasks → sdd-apply → sdd-verify → sdd-archive
 ```
 
-`sdd-govplan` sits between `sdd-init` (infrastructure setup) and the standard SDD pipeline (propose → archive). The SDD Init Guard automatically runs `sdd-init` if needed — you just type `/sdd-govplan`.
+**Archivos**:
+| Ruta | Descripción |
+|------|-------------|
+| `sdd-govplan/SKILL.md` | Instrucciones del orchestrator |
+| `sdd-govplan/assets/project-brief-lite.yaml` | Template LITE (7 secciones) |
+| `sdd-govplan/assets/project-brief-full.yaml` | Template FULL (19 secciones) |
+| `sdd-govplan/govplan.html` | Página de referencia interactiva |
 
-## Installation
+---
 
-This skill is installed in the Gentle AI skill directories:
+### 2. `workflow-builder` — Custom Workflow Builder
 
-- `~/.config/opencode/skills/sdd-govplan/`
-- `~/.agents/skills/sdd-govplan/`
+**Para proyectos de CUALQUIER tipo** — no solo software. Crea dinámicamente flujos de trabajo personalizados con skills generadas para cada fase.
 
-It's registered in `AGENTS.md` and the orchestrator prompt is updated in `opencode.json`.
-
-## Usage
+Ideal para: tesis académicas, consultoría ISO 27001, coaching PNL, coaching de carrera, investigaciones, y cualquier proceso multi-fase.
 
 ```
-/sdd-govplan                              # Start interactive governance
-/sdd-govplan Quiero construir un CRM      # Start with pre-filled idea
+/workflow-builder                         # Inicia entrevista para definir el workflow
+/workflow-builder "Tesis sobre IA"        # Con nombre prefijado
+/workflow continue                        # Ejecuta la siguiente fase pendiente
+/workflow status                          # Muestra progreso del workflow actual
 ```
 
-The orchestrator will:
-1. Check `sdd-init` status (runs it silently if needed)
-2. Ask structured questions (one at a time)
-3. Explore the codebase if it exists
-4. Generate the governance brief
-5. Propose SDD changes for each feature
+**Templates incluidos**:
 
-## Artifact Store Support
+| Tipo | Fases | Descripción |
+|------|-------|-------------|
+| **Thesis / Investigación** | 8 | problema → objetivos → justificación → marco teórico → metodología → análisis → redacción APA → referencias |
+| **Consultoría (ISO 27001, etc.)** | 6 | diagnóstico → plan de acción → implementación → evaluación → mejora continua → cierre |
+| **PNL Coaching** | 5 | línea base → objetivos → ejercicios → seguimiento → evaluación |
+| **Career Coaching** | 5 | autoevaluación → exploración → plan de carrera → ejecución → revisión |
+| **Custom** | a definir | El usuario describe cada fase y se genera automáticamente |
 
-| Mode | Storage |
-|------|---------|
-| `engram` | Persistent memory (`sdd/govplan/{project}/brief`) |
-| `openspec` | File-based (`governance/project-brief.yaml`) |
-| `hybrid` | Both |
-| `none` | Inline only |
+**Cómo funciona**:
+```
+/workflow-builder
+  │
+  ├── Fase 1: Entrevista (orchestrator pregunta)
+  │   • Tipo de proyecto → elige template o custom
+  │   • Ajusta fases, nombres, actividades, outputs
+  │
+  ├── Fase 2: Generación
+  │   • Crea .agent/skills/{workflow-name}/workflow.yaml
+  │   • Crea SKILL.md por cada fase
+  │   • Crea progress.yaml para seguimiento
+  │
+  └── Fase 3: Ejecución (/workflow continue)
+      • Carga la skill de la fase actual
+      • La ejecuta
+      • Actualiza progreso
+      • Avanza a la siguiente
+```
+
+**Archivos generados por proyecto**:
+```
+.agent/skills/{workflow-name}/
+├── workflow.yaml           ← Definición del DAG de fases
+├── progress.yaml           ← Estado actual de ejecución
+├── phase-001-slug.SKILL.md ← Skill para fase 1
+├── phase-002-slug.SKILL.md ← Skill para fase 2
+└── ...
+```
+
+---
+
+## ¿Cuál usar?
+
+| Si tu proyecto es... | Usá |
+|---------------------|-----|
+| Una app, API, o sistema de software | `/sdd-govplan` → pipeline SDD |
+| Una tesis o investigación académica | `/workflow-builder` |
+| Una consultoría empresarial | `/workflow-builder` |
+| Coaching de carrera o PNL | `/workflow-builder` |
+| Un proyecto que no es código pero tiene fases | `/workflow-builder` |
+| Una mezcla de software + consultoría | Ambos: primero `/sdd-govplan` para el software, después `/workflow-builder` para el resto |
+
+---
+
+## Instalación global
+
+Las skills se instalan en los directorios globales de Gentle AI:
+
+```
+~/.config/opencode/skills/
+├── sdd-govplan/          ← Governance para software
+│   ├── SKILL.md
+│   ├── govplan.html
+│   └── assets/
+└── workflow-builder/     ← Workflows para cualquier proyecto
+    ├── SKILL.md
+    └── assets/
+        ├── phase-skill-template.md
+        └── templates/
+```
+
+Y en la copia de cobertura global:
+
+```
+~/.agents/skills/
+├── sdd-govplan/
+└── workflow-builder/
+```
+
+Registradas en `AGENTS.md` para que el orchestrator las encuentre via `available_skills`.
+
+---
+
+## Repositorio
+
+Este repo contiene el código fuente de ambas skills.
+
+```
+sdd-govplan/               ← Skill de governance planning (software)
+workflow-builder/          ← Skill de workflow builder (universal)
+```
 
 ## License
 
-MIT — see [Gentle AI](https://github.com/gentleman-programming/gentle-ai)
+MIT — parte del ecosistema [Gentle AI](https://github.com/gentleman-programming/gentle-ai)
