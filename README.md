@@ -1,5 +1,13 @@
 # Gentle AI Meta-Skills
 
+> **⚠️ Este repo fue reemplazado por [agent-core-v3](https://github.com/QuantumEdu/agent-core-v3).**
+> Ahora todas las skills se instalan con un solo comando:
+> ```bash
+> npm install -g https://github.com/QuantumEdu/agent-core-v3
+> agent-core-v3
+> ```
+> Las 7 skills (sdd-govplan, workflow-builder, change-review, rule-migration, improvement-loop, memory-fallback, local-retrospective) se instalan automáticamente en OpenCode, Claude Code, Cursor, Codex, Copilot, Gemini, y Gentle AI.
+
 Colección de skills para **Gentle AI** que extienden sus capacidades más allá del pipeline de software.
 
 ```
