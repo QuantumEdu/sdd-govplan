@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hermes AI — Usos, Prompts, Arquitecturas e Integraciones</title>
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface2: #242836;
+    --border: #2e3346;
+    --text: #e1e4ed;
+    --text-dim: #8b90a5;
+    --accent: #c084fc;
+    --accent2: #60a5fa;
+    --green: #4ade80;
+    --orange: #fb923c;
+    --pink: #f472b6;
+    --radius: 10px;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    padding: 2rem 1rem;
+  }
+  .container { max-width: 960px; margin: 0 auto; }
+
+  /* header */
+  header {
+    text-align: center;
+    padding: 3rem 1rem 2rem;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 2.5rem;
+  }
+  header h1 {
+    font-size: 2.6rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  header p {
+    color: var(--text-dim);
+    margin-top: 0.75rem;
+    font-size: 1.05rem;
+  }
+  header .badge {
+    display: inline-block;
+    margin-top: 1rem;
+    padding: 0.3rem 1rem;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    background: var(--surface2);
+    color: var(--accent);
+    border: 1px solid var(--accent);
+  }
+
+  /* cards grid */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.25rem;
+    margin-bottom: 2.5rem;
+  }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    transition: border-color .2s, transform .2s;
+  }
+  .card:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+  }
+  .card .emoji { font-size: 1.8rem; margin-bottom: 0.5rem; }
+  .card h3 { font-size: 1.15rem; margin-bottom: 0.5rem; color: var(--accent2); }
+  .card p { font-size: 0.92rem; color: var(--text-dim); margin-bottom: 0.75rem; }
+  .card .tag {
+    display: inline-block;
+    font-size: 0.72rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 4px;
+    background: var(--surface2);
+    color: var(--accent);
+    margin-right: 0.3rem;
+    margin-bottom: 0.2rem;
+  }
+
+  /* sections */
+  section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 2rem;
+    margin-bottom: 2rem;
+  }
+  section h2 {
+    font-size: 1.4rem;
+    margin-bottom: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--accent2);
+  }
+  section h2 .icon { color: var(--accent); }
+
+  /* prompt blocks */
+  .prompt-box {
+    background: #0d0f15;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.25rem;
+    margin: 1rem 0;
+    font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    overflow-x: auto;
+    white-space: pre-wrap;
+    word-break: break-word;
+    color: #c9d1d9;
+  }
+  .prompt-box .sys { color: var(--pink); }
+  .prompt-box .user { color: var(--green); }
+  .prompt-box .com { color: var(--text-dim); font-style: italic; }
+
+  /* architecture diagram as ascii */
+  .arch {
+    background: #0d0f15;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.25rem;
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    font-size: 0.82rem;
+    line-height: 1.7;
+    overflow-x: auto;
+    white-space: pre;
+    color: var(--text);
+    margin: 1rem 0;
+  }
+  .arch .hl { color: var(--accent); font-weight: 600; }
+  .arch .g { color: var(--green); }
+  .arch .b { color: var(--accent2); }
+  .arch .o { color: var(--orange); }
+
+  /* integration table */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+    font-size: 0.9rem;
+  }
+  th {
+    text-align: left;
+    padding: 0.6rem 0.8rem;
+    background: var(--surface2);
+    color: var(--accent);
+    font-weight: 600;
+    border-bottom: 2px solid var(--border);
+  }
+  td {
+    padding: 0.6rem 0.8rem;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-dim);
+  }
+  td:first-child { color: var(--text); font-weight: 500; }
+  tr:hover td { background: var(--surface2); }
+
+  /* footer */
+  footer {
+    text-align: center;
+    padding: 2rem;
+    color: var(--text-dim);
+    font-size: 0.85rem;
+    border-top: 1px solid var(--border);
+    margin-top: 1rem;
+  }
+  footer a { color: var(--accent); text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+
+  @media (max-width: 640px) {
+    header h1 { font-size: 1.8rem; }
+    .grid { grid-template-columns: 1fr; }
+    section { padding: 1.25rem; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+<header>
+  <h1>Hermes AI</h1>
+  <p>Usos, prompts, arquitecturas de agentes e integraciones del ecosistema <strong>Nous Research Hermes</strong></p>
+  <span class="badge">Hermes 2 Pro · Hermes 3 · Nous Research</span>
+</header>
+
+<!-- ═══ CARD GRID — CATEGORÍAS DE USO ═══ -->
+<div class="grid">
+
+  <div class="card">
+    <div class="emoji">🗣️</div>
+    <h3>Asistencia Personal</h3>
+    <p>Chat general, recomendaciones, organización de viajes, respuestas con control de tono y razonamiento.</p>
+    <span class="tag">conversacional</span>
+    <span class="tag">RAG</span>
+  </div>
+
+  <div class="card">
+    <div class="emoji">⚡</div>
+    <h3>Productividad</h3>
+    <p>Clasificación de tickets, resumen de correos, redacción de documentos, procesamiento de planillas.</p>
+    <span class="tag">JSON mode</span>
+    <span class="tag">Slack</span>
+    <span class="tag">Gmail</span>
+  </div>
+
+  <div class="card">
+    <div class="emoji">💻</div>
+    <h3>Programación</h3>
+    <p>Generación de código, refactors, debugging, tests, documentación técnica, revisión de PRs.</p>
+    <span class="tag">ReAct</span>
+    <span class="tag">multi-agent</span>
+    <span class="tag">git</span>
+  </div>
+
+  <div class="card">
+    <div class="emoji">🔒</div>
+    <h3>Ciberseguridad</h3>
+    <p>Análisis de logs, detección de IoCs, generación de payloads, escaneo de vulnerabilidades, SOC automation.</p>
+    <span class="tag">VirusTotal</span>
+    <span class="tag">Shodan</span>
+    <span class="tag">YARA</span>
+  </div>
+
+  <div class="card">
+    <div class="emoji">📊</div>
+    <h3>Data Science</h3>
+    <p>Limpieza de datos, EDA, visualización, feature engineering, reportes automáticos con pandas.</p>
+    <span class="tag">Python REPL</span>
+    <span class="tag">Jupyter</span>
+    <span class="tag">matplotlib</span>
+  </div>
+
+  <div class="card">
+    <div class="emoji">📚</div>
+    <h3>RAG Corporativo</h3>
+    <p>Chat sobre documentación interna, bases de conocimiento, manuales técnicos con fuentes citadas.</p>
+    <span class="tag">ChromaDB</span>
+    <span class="tag">Qdrant</span>
+    <span class="tag">LlamaIndex</span>
+  </div>
+
+  <div class="card">
+    <div class="emoji">🌐</div>
+    <h3>Web Automation</h3>
+    <p>Rellenar formularios, scraping, monitoreo de cambios, extracción de datos con browser control.</p>
+    <span class="tag">Playwright</span>
+    <span class="tag">Puppeteer</span>
+  </div>
+
+  <div class="card">
+    <div class="emoji">🧩</div>
+    <h3>Multi-Agente</h3>
+    <p>Orquestación planner/worker/reviewer, equipos de agentes especializados con delegación.</p>
+    <span class="tag">CrewAI</span>
+    <span class="tag">AutoGen</span>
+    <span class="tag">pi-subagents</span>
+  </div>
+
+</div>
+
+<!-- ═══ EJEMPLOS DE PROMPTS ═══ -->
+<section>
+  <h2><span class="icon">⎔</span> Ejemplos de Prompts</h2>
+
+  <p><strong>1. Clasificación de tickets (JSON mode)</strong></p>
+  <div class="prompt-box"><span class="sys">&lt;|im_start|&gt;system</span>
+You are a ticket classifier. Given a support message, output JSON:
+{"category": "billing|technical|account|feature_request", "priority": "low|medium|high|critical", "summary": "one line"}
+Use search_ticket only when the message references an existing ticket number.
+<span class="sys">&lt;|im_end|&gt;</span>
+<span class="user">&lt;|im_start|&gt;user</span>
+My invoice #INV-4392 was charged twice this month. I need a refund ASAP.
+<span class="user">&lt;|im_end|&gt;</span></div>
+
+  <p><strong>2. Refactor de código con herramientas</strong></p>
+  <div class="prompt-box"><span class="sys">&lt;|im_start|&gt;system</span>
+You are a senior software engineer. Refactor the given code to improve readability and performance.
+Use file_read to inspect related files and git_diff to check current changes.
+<span class="sys">&lt;|im_end|&gt;</span>
+<span class="user">&lt;|im_start|&gt;user</span>
+Refactor this function to use async/await instead of callbacks:
+<span class="com">// function fetchUser(id, cb) { ... }</span>
+<span class="user">&lt;|im_end|&gt;</span></div>
+
+  <p><strong>3. Análisis de logs de seguridad</strong></p>
+  <div class="prompt-box"><span class="sys">&lt;|im_start|&gt;system</span>
+You are a security analyst. Analyze the provided log entries for indicators of compromise.
+Run ioc_lookup on suspicious IPs/domains, then produce a structured incident report.
+<span class="sys">&lt;|im_end|&gt;</span>
+<span class="user">&lt;|im_start|&gt;user</span>
+[log lines with multiple failed SSH attempts from 10.0.0.50]
+<span class="user">&lt;|im_end|&gt;</span></div>
+
+  <p><strong>4. RAG sobre documentación corporativa</strong></p>
+  <div class="prompt-box"><span class="sys">&lt;|im_start|&gt;system</span>
+You are a knowledge assistant for Acme Corp. You have a vector store with company docs.
+When asked, use retrieve_docs to find relevant passages, then answer based only on those passages. Cite sources.
+<span class="sys">&lt;|im_end|&gt;</span>
+<span class="user">&lt;|im_start|&gt;user</span>
+¿Cuál es la política de devolución para pedidos internacionales?
+<span class="user">&lt;|im_end|&gt;</span></div>
+
+  <p><strong>5. Automatización de navegador</strong></p>
+  <div class="prompt-box"><span class="sys">&lt;|im_start|&gt;system</span>
+You control a browser via the browse tool. Navigate, click, type, and extract.
+Goal: log into the CRM, export today's leads as CSV, and save it.
+<span class="sys">&lt;|im_end|&gt;</span>
+<span class="user">&lt;|im_start|&gt;user</span>
+Get today's leads from the CRM.
+<span class="user">&lt;|im_end|&gt;</span></div>
+</section>
+
+<!-- ═══ ARQUITECTURAS ═══ -->
+<section>
+  <h2><span class="icon">⬡</span> Arquitecturas de Agentes más usadas</h2>
+
+  <p><strong>A. ReAct Loop</strong> — La más común. El modelo razona, actúa, observa y repite.</p>
+  <div class="arch"><span class="g">User</span> ──&gt; <span class="hl">Hermes</span> (piensa + actúa) ──&gt; <span class="o">tool</span> ──&gt; observa ──&gt; piensa ──&gt; <span class="o">tool</span> ──&gt; ... ──&gt; <span class="g">respuesta final</span>
+
+  <span class="com">// Internamente genera:</span>
+  <span class="hl">Thought</span> → <span class="b">Action</span> → <span class="o">Observation</span> → <span class="hl">Thought</span> → <span class="b">Final Answer</span></div>
+
+  <p><strong>B. Plan-and-Execute</strong></p>
+  <div class="arch"><span class="hl">Planner</span> ──&gt; lista de pasos (JSON)
+     │
+     ├──&gt; ejecuta paso 1 (<span class="o">tool</span>)
+     ├──&gt; ejecuta paso 2 (<span class="o">tool</span>)
+     └──&gt; ejecuta paso 3 (<span class="o">tool</span>)
+          │
+          └──&gt; <span class="g">verifica</span> → <span class="g">reporta</span></div>
+
+  <p><strong>C. Multi-Agent Orquestado</strong></p>
+  <div class="arch"><span class="hl">Orchestrator</span> <span class="com">(Hermes)</span>
+     │
+     ├── <span class="b">Planner</span> ── define plan en steps
+     ├── <span class="b">Worker A</span> ── backend
+     ├── <span class="b">Worker B</span> ── frontend
+     └── <span class="b">Reviewer</span> ── revisa diff → pasa / falla
+          │
+          └── <span class="g">reporte final</span></div>
+  <p style="color:var(--text-dim);font-size:0.9rem;">Frameworks: CrewAI, AutoGen, pi-subagents. Cada agente tiene <strong>system prompt y tools acotados</strong>.</p>
+
+  <p><strong>D. Tool-Augmented LLM (TALL)</strong> — La variante más simple.</p>
+  <div class="arch"><span class="g">User</span> ──&gt; <span class="hl">Hermes</span> (system + tool definitions) ──&gt; decide <span class="o">tool</span> ──&gt; ejecuta ──&gt; devuelve resultado</div>
+  <p style="color:var(--text-dim);font-size:0.9rem;">Hermes 2 Pro y Hermes 3 tienen fine-tuning específico para <strong>JSON mode con tool calls nativas</strong>.</p>
+</section>
+
+<!-- ═══ TABLA DE INTEGRACIONES ═══ -->
+<section>
+  <h2><span class="icon">⌗</span> Integraciones más comunes</h2>
+  <table>
+    <thead>
+      <tr><th>Categoría</th><th>Herramientas</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Frameworks de agentes</td><td>LangChain, CrewAI, AutoGen, pi-subagents, Haystack, DSPy</td></tr>
+      <tr><td>Vectores / RAG</td><td>ChromaDB, Qdrant, Pinecone, Weaviate, Milvus</td></tr>
+      <tr><td>Bases de datos</td><td>PostgreSQL (vía tool), SQLite, Snowflake, Supabase</td></tr>
+      <tr><td>DevOps / Cloud</td><td>kubectl, Docker, AWS CLI, Terraform, Pulumi</td></tr>
+      <tr><td>APIs web</td><td>REST tool, GraphQL tool, requests wrapper, FastAPI</td></tr>
+      <tr><td>Browser automation</td><td>Playwright, Puppeteer, Selenium, Browserless</td></tr>
+      <tr><td>Ejecución de código</td><td>Python REPL, Jupyter, Deno, Code Runner sandbox</td></tr>
+      <tr><td>Comunicación</td><td>Slack, Discord, Gmail, SendGrid, Telegram</td></tr>
+      <tr><td>Seguridad</td><td>VirusTotal, Shodan, nmap, nuclei, YARA, Wireshark</td></tr>
+      <tr><td>MCP (Model Context Protocol)</td><td>Claude Desktop, Pi vía MCP gateway, servidores MCP custom</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ═══ BONUS: DATA CLAVE ═══ -->
+<section>
+  <h2><span class="icon">✦</span> Dato clave</h2>
+  <p style="font-size:1.05rem; margin-bottom:0.5rem;">
+    Hermes 3 (Nous Research) está fine-tuneado sobre <strong>Llama 3.1</strong> y tiene una de las mejores tasas de acierto en
+    <strong>function calling</strong> del ecosistema open-source. Por eso es el backbone elegido en tantos agentes autónomos:
+    no solo entiende la instrucción, sino que <strong>sabe cuándo y cómo llamar herramientas</strong>.
+  </p>
+  <p style="color:var(--text-dim);">
+    Modelos principales: Hermes 2 Pro (Mistral-based), Hermes 3 (Llama 3.1-based), Hermes 3 70B, Hermes 3 405B.
+  </p>
+</section>
+
+<footer>
+  Generado por <strong>el Gentleman</strong> · Datos del ecosistema Nous Research Hermes · Mayo 2026
+</footer>
+
+</div>
+</body>
+</html>
