@@ -1,166 +1,126 @@
-# Gentle AI Meta-Skills
+# sdd-govplan
 
-> **⚠️ Este repo fue reemplazado por [agent-core-v3](https://github.com/QuantumEdu/agent-core-v3).**
-> Ahora todas las skills se instalan con un solo comando:
-> ```bash
-> npm install -g https://github.com/QuantumEdu/agent-core-v3
-> agent-core-v3
-> ```
-> Las 7 skills (sdd-govplan, workflow-builder, change-review, rule-migration, improvement-loop, memory-fallback, local-retrospective) se instalan automáticamente en OpenCode, Claude Code, Cursor, Codex, Copilot, Gemini, y Gentle AI.
+Repositorio maestro de la capa de **governance y flujo** para proyectos asistidos por IA sobre `gentle-ai`.
 
-Colección de skills para **Gentle AI** que extienden sus capacidades más allá del pipeline de software.
+## Quick path
 
-```
-📦 sdd-govplan/
-├── 📄 README.md
-├── 📁 sdd-govplan/            ← Governance planning para proyectos de SOFTWARE
-│   ├── SKILL.md
-│   ├── govplan.html
-│   └── assets/
-└── 📁 workflow-builder/       ← Workflow builder para CUALQUIER tipo de proyecto
-    ├── SKILL.md
-    └── assets/
-        ├── phase-skill-template.md
-        └── templates/
-```
+1. Leer `AGENTS.md`
+2. Leer `governance/00-start-here.md`
+3. Usar `governance/05-quick-start-by-scenario.md`
+4. Seguir el flujo: `brief-inception` → `brief-to-prd` → `prd-to-spec` → `spec-to-tasks`
 
----
+## Qué es este repo
 
-## 1 · `sdd-govplan` — Governance para Software
+Este repo ya no debe entenderse como una skill aislada de governance.
 
-Capa de gobernabilidad que captura contexto, features, decisiones de arquitectura y criterios de aceptación ANTES del pipeline SDD. Inspirado en AWS Well-Architected / DLC.
+Ahora representa la **fuente maestra** de:
 
-```
-/sdd-govplan --lite               # Modo breve (CLI, MVPs, protos)
-/sdd-govplan --standard           # Modo estándar (web apps, equipos 2-5)
-/sdd-govplan --full               # Modo completo (sistemas críticos)
-/sdd-govplan "API de facturación" # Con idea pre-cargada
-```
+- governance;
+- briefs y templates canónicos;
+- puente `brief → PRD → spec → tasks`;
+- review, migration, retrospective e improvement;
+- documentación de límites entre `gentle-ai`, `agent-core-v3` y los overlays locales.
 
-**Auto-detección**: según `tipo_entrega`, `team_size`, `criticalidad`, `timeframe` resuelve automáticamente LITE / STANDARD / FULL.
+## Modelo de capas
 
-**Pipeline**:
-```
-sdd-init → sdd-govplan → sdd-propose → sdd-spec → sdd-design → sdd-tasks → sdd-apply → sdd-verify → sdd-archive
-```
+| Capa | Dueño | Rol |
+|------|------|-----|
+| Runtime | `gentle-ai` | orquestación, memoria, SDD, delegación |
+| Core reusable | `agent-core-v3` | distribución global por npm de skills/assets reutilizables |
+| Overlay local | `/ai` en cada repo | adaptación contextual del proyecto |
 
-**Archivos**:
-| Ruta | Descripción |
-|------|-------------|
-| `sdd-govplan/SKILL.md` | Instrucciones del orchestrator |
-| `sdd-govplan/assets/project-brief-lite.yaml` | Template LITE (7 secciones) |
-| `sdd-govplan/assets/project-brief-full.yaml` | Template FULL (19 secciones) |
-| `sdd-govplan/govplan.html` | Página de referencia interactiva |
+## Qué resuelve
 
----
+Cuando el sistema solo tiene skills globales o prompts sueltos, suele faltar:
 
-## 2 · `workflow-builder` — Workflows para Cualquier Proyecto
+- intake ordenado;
+- puente entre idea y tareas ejecutables;
+- navegación por escenarios;
+- templates consistentes;
+- estrategia clara para cambios sensibles y migraciones.
 
-Crea dinámicamente flujos de trabajo personalizados con skills generadas para CADA FASE. Ideal para proyectos que NO son de software.
+`sdd-govplan` centraliza precisamente esa parte.
 
-```
-/workflow-builder                         # Inicia entrevista
-/workflow-builder "Tesis sobre IA"        # Con nombre prefijado
-/workflow continue                        # Ejecuta siguiente fase
-/workflow status                          # Muestra progreso
-```
+## Estructura del repo
 
-### Modo Investigación (NUEVO)
+```text
+governance/      # gates, workflow map, quick-start, start-here
+templates/       # briefs, spec, tasks, review, retrospective, migration
+docs/            # límites del sistema, planes maestros, mapas de publicación
+reference/       # patterns y material de apoyo
 
-Cuando **no conocés el flujo de trabajo**, el agente investiga por vos:
+sdd-govplan/     # skill original de governance
+workflow-builder/# skill para workflows no-code
 
-```
-/workflow-builder
-
-[1]: ¿Qué tipo de proyecto?
-> Quiero implementar ISO 27001 en una empresa
-
-[2]: ¿Conocés el flujo o querés que investigue?
-> No lo conozco, investigá
-
-→ El agente busca: ISO 27001 implementation methodology, PDCA cycle
-→ Propone: diagnóstico → SGSI →风险评估 → controles → implementación → auditoría → certificación
-→ Vos validás, ajustás, y se generan las skills
+brief-inception/
+brief-to-prd/
+prd-to-spec/
+spec-to-tasks/
+change-review/
+rule-migration/
+improvement-loop/
+memory-fallback/
+local-retrospective/
+project-stack-decider/
+add-endpoint/
+coding-conventions/
+prompt-improver/
+geek-tech-tone/
 ```
 
-**Qué investiga según el dominio:**
+## Flujos principales
 
-| Domain | Investiga | Propone |
-|--------|-----------|---------|
-| Estándares (ISO, COBIT) | Fases de implementación, requisitos de certificación | Gap analysis → implementación → auditoría |
-| Metodologías ágiles | Scrum, Kanban, SAFe | Sprint planning → daily → review → retro |
-| Investigación científica | Método científico, metodologías | Problema → hipótesis → experimento → conclusión |
-| Design Thinking | Proceso de diseño centrado en humano | Empatizar → definir → idear → prototipar → testear |
-| Lean / Six Sigma | DMAIC, value stream mapping | Define → measure → analyze → improve → control |
-| Cualquier dominio no listado | Búsqueda web + conocimiento del modelo | Flujo propuesto + opciones alternativas |
+### Flujo canónico
 
-### Templates incluidos
+`brief-inception` → `brief-to-prd` → `prd-to-spec` → `spec-to-tasks`
 
-| Tipo | Fases | Descripción |
-|------|-------|-------------|
-| **Thesis** | 8 | problema → objetivos → justificación → marco teórico → metodología → análisis → redacción APA → referencias |
-| **Consulting** | 6 | diagnóstico → plan de acción → implementación → evaluación → mejora continua → cierre |
-| **PNL Coaching** | 5 | línea base → objetivos → ejercicios → seguimiento → evaluación |
-| **Career Coaching** | 5 | autoevaluación → exploración → plan de carrera → ejecución → revisión |
-| **Custom / Investigado** | a definir | El usuario describe o el agente investiga y propone |
+### Flujos de soporte
 
-### Archivos generados por proyecto
+- review → `change-review`
+- rule replacement → `rule-migration`
+- repeated error → `improvement-loop`
+- no Engram → `memory-fallback`
+- retrospective → `local-retrospective`
 
-```
-.agent/skills/{workflow-name}/
-├── workflow.yaml           ← DAG de fases
-├── progress.yaml           ← Estado de ejecución
-├── phase-001-slug.SKILL.md ← Skill para fase 1
-├── phase-002-slug.SKILL.md ← Skill para fase 2
-└── ...
-```
+## Brief modes
 
----
+- `templates/PROJECT-BRIEF-FULL.yaml` — proyectos serios, sensibles o complejos
+- `templates/PROJECT-BRIEF-LITE.yaml` — proyectos pequeños, rápidos o exploratorios
 
-## ¿Cuál usar?
+## Relación con `agent-core-v3`
 
-| Si tu proyecto es... | Usá |
-|---------------------|-----|
-| App, API, o sistema de software | `/sdd-govplan` |
-| Tesis o investigación académica | `/workflow-builder` |
-| Consultoría empresarial | `/workflow-builder` |
-| Coaching de carrera o PNL | `/workflow-builder` |
-| No sabés por dónde arrancar | `/workflow-builder` → modo investigación |
-| Proyecto sin código con fases | `/workflow-builder` |
+`agent-core-v3` es el **target de distribución**.
 
----
+No debe reemplazar este repo narrativamente; debe recibir desde aquí solo lo reusable:
 
-## Instalación global
+- skills globales
+- templates base
+- assets multi-tool
+- docs de instalación y uso global
 
-```
-~/.config/opencode/skills/
-├── sdd-govplan/
-│   ├── SKILL.md
-│   ├── govplan.html
-│   └── assets/
-└── workflow-builder/
-    ├── SKILL.md
-    └── assets/
-        ├── phase-skill-template.md
-        └── templates/
-```
+## Relación con overlays locales
 
-```
-~/.agents/skills/
-├── sdd-govplan/
-└── workflow-builder/
-```
+Cada proyecto puede tener su propio `/ai` como overlay local.
 
-Registradas en `AGENTS.md`.
+Ese overlay:
+- usa este repo como fuente de gobierno;
+- usa `agent-core-v3` como distribución reusable;
+- se adapta al contexto real del proyecto.
 
----
+## Documentos clave
 
-## Repositorio
+- `governance/00-start-here.md`
+- `governance/04-workflow-map.md`
+- `governance/05-quick-start-by-scenario.md`
+- `docs/system-boundaries.md`
+- `docs/master-plan.md`
+- `docs/repo-publication-map.md`
 
-**https://github.com/QuantumEdu/sdd-govplan**
+## Estado actual
 
-```sdd-govplan```
+Este repo pasa a ser el archivo maestro de la capa de gobernanza trabajada en esta sesión.
+La evolución siguiente es exportar el core reusable hacia `agent-core-v3` sin volver a mezclar runtime, distribución y overlay local.
 
 ## License
 
-MIT — ecosistema [Gentle AI](https://github.com/gentleman-programming/gentle-ai)
+MIT
