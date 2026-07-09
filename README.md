@@ -39,6 +39,23 @@ cp AGENTS.md tu-proyecto/
 
 > Próximamente: `npx agentcore-overlay init` (cuando el paquete esté en npm).
 
+### Seleccionar AI tool
+
+Por defecto pregunta de forma interactiva. También se puede pasar con `--ai`:
+
+```bash
+npx -p git+https://github.com/QuantumEdu/AgentCore.git agentcore-overlay init --ai opencode
+npx -p git+https://github.com/QuantumEdu/AgentCore.git agentcore-overlay init --ai claude-code
+npx -p git+https://github.com/QuantumEdu/AgentCore.git agentcore-overlay init --ai codex
+```
+
+| AI tool | Scaffold destino |
+|---------|-----------------|
+| `gentle-ai` | `ai/` + `AGENTS.md` (raíz) |
+| `opencode` | `.opencode/skills/`, `.opencode/agents/`, etc. |
+| `claude-code` | `.claude/ai/` + `.claude/AGENTS.md` |
+| `codex` (Amazon Q) | `.codex/governance/`, `.codex/templates/`, etc. |
+
 ---
 
 ## Qué es sdd-govplan
