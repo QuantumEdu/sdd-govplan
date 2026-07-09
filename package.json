@@ -1,0 +1,32 @@
+{
+  "name": "sdd-govplan",
+  "version": "1.0.0",
+  "description": "Governance, skills, templates y agentes portables para gentle-ai. Scaffold agnóstico (compatible con gentle-ai, opencode, claude-code, codex).",
+  "bin": {
+    "sdd-govplan": "bin/sdd-govplan.js"
+  },
+  "files": [
+    "bin/",
+    "ai/",
+    "AGENTS.md",
+    "README.md",
+    "LICENSE"
+  ],
+  "license": "MIT",
+  "engines": {
+    "node": ">=16"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/QuantumEdu/sdd-govplan.git"
+  },
+  "keywords": [
+    "gentle-ai",
+    "opencode",
+    "skills",
+    "governance",
+    "scaffold",
+    "workflow",
+    "ai"
+  ]
+}
