@@ -6,20 +6,31 @@ Repositorio maestro de la capa de **governance, skills, templates y flujo** para
 
 ## Instalación
 
-Actualmente desde GitHub (el paquete npm está próximo a publicarse):
+Actualmente desde GitHub (el paquete npm está próximo a publicarse).
+
+### Por proyecto (recomendado)
+
+```bash
+npm install --save-dev git+https://github.com/QuantumEdu/AgentCore.git
+npx agentcore-overlay init
+```
+
+### Global
+
+```bash
+npm install -g git+https://github.com/QuantumEdu/AgentCore.git
+agentcore-overlay init
+```
+
+### Sin instalar (npx directo)
 
 ```bash
 npx -p git+https://github.com/QuantumEdu/AgentCore.git agentcore-overlay init
 ```
 
-O clonando y ejecutando local:
+### Desde este repositorio
 
-```bash
-git clone https://github.com/QuantumEdu/AgentCore.git
-node AgentCore/bin/agentcore-overlay.js init .
-```
-
-O si ya tenés este repo clonado, copiá skills y governance directo:
+Si ya clonaste sdd-govplan, podés copiar skills y governance directo:
 
 ```bash
 cp -r skills/ governance/ templates/ tu-proyecto/
