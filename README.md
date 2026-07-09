@@ -19,9 +19,14 @@ cp -r skills/ governance/ templates/ tu-proyecto/
 cp AGENTS.md tu-proyecto/
 ```
 
-> **Nota**: Para instalación vía npm, usá el paquete [`agentcore-overlay`](https://www.npmjs.com/package/agentcore-overlay):
+> **Nota**: El paquete npm `agentcore-overlay` aún está por publicarse. Mientras tanto, usá directo desde GitHub:
 > ```bash
-> npx agentcore-overlay init
+> npx -p git+https://github.com/QuantumEdu/AgentCore.git agentcore-overlay init
+> ```
+> O clonando:
+> ```bash
+> git clone https://github.com/QuantumEdu/AgentCore.git
+> node AgentCore/bin/agentcore-overlay.js init .
 > ```
 
 ---
