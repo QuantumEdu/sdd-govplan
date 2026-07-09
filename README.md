@@ -1,126 +1,197 @@
 # sdd-govplan
 
-Repositorio maestro de la capa de **governance y flujo** para proyectos asistidos por IA sobre `gentle-ai`.
+Repositorio maestro de la capa de **governance, skills, templates y flujo** para proyectos asistidos por IA sobre `gentle-ai`.
 
-## Quick path
+---
 
-1. Leer `AGENTS.md`
-2. Leer `governance/00-start-here.md`
-3. Usar `governance/05-quick-start-by-scenario.md`
-4. Seguir el flujo: `brief-inception` → `brief-to-prd` → `prd-to-spec` → `spec-to-tasks`
+## Instalación
 
-## Qué es este repo
-
-Este repo ya no debe entenderse como una skill aislada de governance.
-
-Ahora representa la **fuente maestra** de:
-
-- governance;
-- briefs y templates canónicos;
-- puente `brief → PRD → spec → tasks`;
-- review, migration, retrospective e improvement;
-- documentación de límites entre `gentle-ai`, `agent-core-v3` y los overlays locales.
-
-## Modelo de capas
-
-| Capa | Dueño | Rol |
-|------|------|-----|
-| Runtime | `gentle-ai` | orquestación, memoria, SDD, delegación |
-| Core reusable | `agent-core-v3` | distribución global por npm de skills/assets reutilizables |
-| Overlay local | `/ai` en cada repo | adaptación contextual del proyecto |
-
-## Qué resuelve
-
-Cuando el sistema solo tiene skills globales o prompts sueltos, suele faltar:
-
-- intake ordenado;
-- puente entre idea y tareas ejecutables;
-- navegación por escenarios;
-- templates consistentes;
-- estrategia clara para cambios sensibles y migraciones.
-
-`sdd-govplan` centraliza precisamente esa parte.
-
-## Estructura del repo
-
-```text
-governance/      # gates, workflow map, quick-start, start-here
-templates/       # briefs, spec, tasks, review, retrospective, migration
-docs/            # límites del sistema, planes maestros, mapas de publicación
-reference/       # patterns y material de apoyo
-
-sdd-govplan/     # skill original de governance
-workflow-builder/# skill para workflows no-code
-
-brief-inception/
-brief-to-prd/
-prd-to-spec/
-spec-to-tasks/
-change-review/
-rule-migration/
-improvement-loop/
-memory-fallback/
-local-retrospective/
-project-stack-decider/
-add-endpoint/
-coding-conventions/
-prompt-improver/
-geek-tech-tone/
+```bash
+# Clonar y usar directo
+git clone https://github.com/QuantumEdu/AgentCore.git
+npx agentcore-overlay init
 ```
 
-## Flujos principales
+O si ya tenés este repo clonado, copiá las skills y governance a tu proyecto:
 
-### Flujo canónico
+```bash
+cp -r skills/ governance/ templates/ tu-proyecto/
+cp AGENTS.md tu-proyecto/
+```
 
-`brief-inception` → `brief-to-prd` → `prd-to-spec` → `spec-to-tasks`
+> **Nota**: Para instalación vía npm, usá el paquete [`agentcore-overlay`](https://www.npmjs.com/package/agentcore-overlay):
+> ```bash
+> npx agentcore-overlay init
+> ```
 
-### Flujos de soporte
+---
 
-- review → `change-review`
-- rule replacement → `rule-migration`
-- repeated error → `improvement-loop`
-- no Engram → `memory-fallback`
-- retrospective → `local-retrospective`
+## Qué es sdd-govplan
 
-## Brief modes
+Es la **fuente maestra** de governance y skills para gentle-ai. Centraliza:
 
-- `templates/PROJECT-BRIEF-FULL.yaml` — proyectos serios, sensibles o complejos
-- `templates/PROJECT-BRIEF-LITE.yaml` — proyectos pequeños, rápidos o exploratorios
+- **Governance**: puertas de entrada, workflow map, quick-start por escenario
+- **Skills**: 16 capacidades operativas reutilizables (brief, PRD, spec, tasks, review, migration, etc.)
+- **Templates**: briefs, ADRs, specs, roadmaps, retrospectivas
+- **AGENTS.md**: entrypoint operativo del proyecto
 
-## Relación con `agent-core-v3`
+No reemplaza a `gentle-ai`. gentle-ai orquesta; sdd-govplan aporta la guía y estructura.
 
-`agent-core-v3` es el **target de distribución**.
+---
 
-No debe reemplazar este repo narrativamente; debe recibir desde aquí solo lo reusable:
+## Flujo canónico
 
-- skills globales
-- templates base
-- assets multi-tool
-- docs de instalación y uso global
+```
+brief-inception → brief-to-prd → prd-to-spec → spec-to-tasks
+```
 
-## Relación con overlays locales
+Cada skill produce el input de la siguiente:
 
-Cada proyecto puede tener su propio `/ai` como overlay local.
+1. **brief-inception** → brief clasificado con huecos detectados y siguiente artefacto
+2. **brief-to-prd** → PRD corto con decisiones iniciales y riesgos
+3. **prd-to-spec** → spec verificable con escenarios y criterios de aceptación
+4. **spec-to-tasks** → tareas ejecutables con dependencias y criterios de done
 
-Ese overlay:
-- usa este repo como fuente de gobierno;
-- usa `agent-core-v3` como distribución reusable;
-- se adapta al contexto real del proyecto.
+---
+
+## Catálogo de Skills (16)
+
+| Skill | Descripción |
+|-------|-------------|
+| `brief-inception` | Discovery inicial: clasifica el proyecto, detecta huecos, hace hasta 7 preguntas críticas y propone el siguiente artefacto |
+| `brief-to-prd` | Convierte un brief canónico o parcial en un PRD corto, claro y profesional con decisiones y riesgos |
+| `prd-to-spec` | Convierte un PRD en spec operativa y verificable con escenarios y criterios de aceptación |
+| `spec-to-tasks` | Convierte una spec en tareas pequeñas, dependientes y ejecutables con orden y criterios de done |
+| `change-review` | Revisa un cambio antes de integrarlo: riesgos de ruptura, drift de documentación, impactos operativos |
+| `rule-migration` | Diseña migración segura de reglas en sistemas operativos: shadow mode, rollout gradual, rollback |
+| `add-endpoint` | Guía la adición segura de un endpoint nuevo con contrato, validación, reglas y pruebas mínimas |
+| `improvement-loop` | Captura errores repetidos, identifica causa raíz y propone regla/checklist/ajuste de flujo |
+| `memory-fallback` | Memoria local basada en archivos cuando Engram no está disponible (decisions, pitfalls, working-memory) |
+| `local-retrospective` | Retrospectiva ligera: qué funcionó, qué falló, qué se repitió, qué ajustar |
+| `project-stack-decider` | Ayuda a decidir stack y forma de entrega con trade-offs, supuestos y alternativas descartadas |
+| `prompt-improver` | Reestructura prompts con formato profesional, claro y reusable sin cambiar la intención |
+| `coding-conventions` | Resume prácticas de arquitectura, API, seguridad y testing como base de implementación o revisión |
+| `geek-tech-tone` | Ajusta respuestas a tono geek, técnico, profesional, proactivo y con pensamiento lateral |
+| `workflow-builder` | Crea workflows custom para proyectos no-software (tesis, consultoría, coaching, investigación). Incluye 4 templates predefinidos |
+| `sdd-govplan` | Skill original de governance: aplica el flujo completo del repositorio como skill invocable |
+
+---
+
+## Estructura del repositorio
+
+```
+├── AGENTS.md                ← Entrypoint operativo
+├── governance/              ← Puertas de entrada y mapas de flujo
+│   ├── 00-start-here.md     ←   Punto de entrada
+│   ├── 02-decision-gates.md
+│   ├── 03-aidlc-lite.md
+│   ├── 04-workflow-map.md   ←   Vista estructural por tipo de cambio
+│   └── 05-quick-start-by-scenario.md  ←  Entrada por caso real
+├── templates/               ← Formatos para materializar outputs
+│   ├── PROJECT-BRIEF-FULL.yaml
+│   ├── PROJECT-BRIEF-LITE.yaml
+│   ├── change-review-template.md
+│   ├── decision-adr-template.md
+│   ├── prompt-structures.md
+│   ├── retrospective-template.md
+│   ├── roadmap-template.md
+│   ├── rule-migration-template.md
+│   ├── spec-template.md
+│   └── tasks-template.md
+├── docs/                    ← Límites del sistema, planes maestros, mapas de publicación
+├── reference/               ← Patterns y material de apoyo
+│
+├── brief-inception/         ← Skills (16)
+├── brief-to-prd/
+├── prd-to-spec/
+├── spec-to-tasks/
+├── change-review/
+├── rule-migration/
+├── add-endpoint/
+├── improvement-loop/
+├── memory-fallback/
+├── local-retrospective/
+├── project-stack-decider/
+├── prompt-improver/
+├── coding-conventions/
+├── geek-tech-tone/
+├── workflow-builder/        ← + 4 templates de proyecto (thesis, consulting, coaching)
+│   └── assets/templates/
+└── sdd-govplan/             ← Skill original de governance
+```
+
+---
+
+## Casos de uso
+
+### Proyecto nuevo con discovery
+
+```
+brief-inception → brief-to-prd → prd-to-spec → spec-to-tasks
+```
+
+### Cambio sensible en sistema existente
+
+```
+change-review
+├── rule-migration (si reemplaza reglas en producción)
+```
+
+### Agregar endpoint
+
+```
+add-endpoint → change-review
+```
+
+### Error repetitivo
+
+```
+improvement-loop → local-retrospective
+```
+
+### Sin Engram (continuidad local)
+
+```
+memory-fallback
+```
+Archivos clave: `decisions.md`, `pitfalls.md`, `working-memory.md`
+
+### Proyecto no-software (tesis, consultoría, coaching)
+
+```
+workflow-builder → elegir template → /workflow continue
+```
+
+---
+
+## Templates disponibles (10)
+
+| Template | Uso |
+|----------|-----|
+| `PROJECT-BRIEF-FULL.yaml` | Brief completo para proyectos serios o complejos |
+| `PROJECT-BRIEF-LITE.yaml` | Brief corto para proyectos pequeños o exploratorios |
+| `change-review-template.md` | Estructura para revisión de cambio |
+| `decision-adr-template.md` | Formato ADR para decisiones arquitectónicas |
+| `prompt-structures.md` | Estructuras de prompt reusables |
+| `retrospective-template.md` | Guía para retrospectiva post-cambio |
+| `roadmap-template.md` | Formato de roadmap |
+| `rule-migration-template.md` | Plan de migración de reglas |
+| `spec-template.md` | Template de spec operativa |
+| `tasks-template.md` | Template de breakdown de tareas |
+
+---
 
 ## Documentos clave
 
-- `governance/00-start-here.md`
-- `governance/04-workflow-map.md`
-- `governance/05-quick-start-by-scenario.md`
-- `docs/system-boundaries.md`
-- `docs/master-plan.md`
-- `docs/repo-publication-map.md`
+- `governance/00-start-here.md` — punto de entrada
+- `governance/04-workflow-map.md` — mapa estructural por tipo de cambio
+- `governance/05-quick-start-by-scenario.md` — guía operativa por escenario
+- `docs/system-boundaries.md` — límites entre gentle-ai, agent-core-v3 y overlays locales
+- `docs/master-plan.md` — plan maestro de evolución
+- `docs/repo-publication-map.md` — mapa de publicación entre repos
 
-## Estado actual
+---
 
-Este repo pasa a ser el archivo maestro de la capa de gobernanza trabajada en esta sesión.
-La evolución siguiente es exportar el core reusable hacia `agent-core-v3` sin volver a mezclar runtime, distribución y overlay local.
-
-## License
+## Licencia
 
 MIT
